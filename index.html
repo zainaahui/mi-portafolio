@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Portafolio - Universo Pastel</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap');
+
+    :root {
+      --bg-color: #fff1f5;
+      --card-bg: rgba(255, 255, 255, 0.8);
+      --header-text: #4a2038;
+      --sub-text: #7d4d68;
+      --btn-bg: #f3a6b8;
+      --btn-hover: #d9748f;
+      --card-border: rgba(255, 255, 255, 0.95);
+      --shadow-color: rgba(230, 160, 185, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: radial-gradient(circle at top right, #ffe6ee 0%, #fff1f5 55%, #f6e3ec 100%);
+      color: var(--header-text);
+      line-height: 1.6;
+      padding: 3rem 1.5rem;
+      min-height: 100vh;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+
+    header h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3.4rem;
+      font-weight: 700;
+      color: var(--header-text);
+      letter-spacing: 0.5px;
+      margin-bottom: 0.3rem;
+    }
+
+    header p {
+      color: var(--sub-text);
+      font-size: 1.1rem;
+      font-style: italic;
+    }
+
+    .container {
+      max-width: 1050px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 2rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 28px;
+      padding: 2.2rem 1.6rem;
+      text-align: center;
+      box-shadow: 0 12px 30px var(--shadow-color);
+      border: 1px solid var(--card-border);
+      backdrop-filter: blur(14px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(219, 123, 147, 0.32);
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    .illustration-wrapper {
+      width: 100%;
+      height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.2rem;
+    }
+
+    .planet-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .planet-group {
+      transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+      transform-origin: center center;
+    }
+
+    .card:hover .planet-group {
+      transform: translateY(-6px) scale(1.06) rotate(3deg);
+    }
+
+    .card:hover .twinkle-star {
+      animation: pulse 1.2s infinite alternate ease-in-out;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.3; transform: scale(0.85); }
+      100% { opacity: 1; transform: scale(1.25); }
+    }
+
+    .project-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--header-text);
+      margin-bottom: 0.5rem;
+    }
+
+    .project-desc {
+      font-size: 0.9rem;
+      color: var(--sub-text);
+      margin-bottom: 1.6rem;
+      min-height: 2.4rem;
+    }
+
+    .btn {
+      display: inline-block;
+      text-decoration: none;
+      background-color: var(--btn-bg);
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 0.75rem 1.6rem;
+      border-radius: 50px;
+      transition: all 0.25s ease;
+      letter-spacing: 0.3px;
+      box-shadow: 0 4px 14px rgba(243, 166, 184, 0.45);
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .btn:hover {
+      background-color: var(--btn-hover);
+      box-shadow: 0 6px 18px rgba(219, 123, 147, 0.6);
+      transform: translateY(-2px);
+    }
+
+    /* --- ESTILOS DEL MODAL --- */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(74, 32, 56, 0.35);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .modal-box {
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 2.5rem 2rem;
+      max-width: 380px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(74, 32, 56, 0.25);
+      border: 1px solid var(--card-border);
+      position: relative;
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.85); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--header-text);
+      margin-bottom: 0.4rem;
+    }
+
+    .modal-subtitle {
+      font-size: 0.9rem;
+      color: var(--sub-text);
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-options {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .modal-btn {
+      width: 100%;
+      text-align: center;
+    }
+
+    .audio-player {
+      width: 100%;
+      margin-top: 0.5rem;
+      outline: none;
+      border-radius: 30px;
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 1rem;
+      right: 1.2rem;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--sub-text);
+      cursor: pointer;
+      line-height: 1;
+      padding: 0.2rem;
+      transition: color 0.2s;
+    }
+
+    .close-modal:hover {
+      color: var(--header-text);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 4.5rem;
+      font-size: 0.9rem;
+      color: var(--sub-text);
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Mi Portafolio</h1>
+    <p>Proyectos y constelaciones de código</p>
+  </header>
+
+  <main class="container">
+    <!-- PLANETA 1 -->
+    <article class="card">
+      <div>
+        <div class="illustration-wrapper">
+          <svg class="planet-svg" viewBox="0 0 200 160">
+            <defs>
+              <linearGradient id="planetGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ffccd5"/>
+                <stop offset="60%" stop-color="#f48ca7"/>
+                <stop offset="100%" stop-color="#d65d82"/>
+              </linearGradient>
+              <linearGradient id="ringGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#fbd0d9" stop-opacity="0.2"/>
+                <stop offset="50%" stop-color="#fbd0d9" stop-opacity="0.95"/>
+                <stop offset="100%" stop-color="#fbd0d9" stop-opacity="0.2"/>
+              </linearGradient>
+            </defs>
+            <circle cx="100" cy="80" r="54" fill="#ffeaf0" opacity="0.6"/>
+            <g class="planet-group">
+              <ellipse cx="100" cy="80" rx="68" ry="16" fill="none" stroke="url(#ringGrad1)" stroke-width="4.5" transform="rotate(-18 100 80)" stroke-dasharray="210" stroke-dashoffset="105"/>
+              <circle cx="100" cy="80" r="38" fill="url(#planetGrad1)"/>
+              <ellipse cx="112" cy="70" rx="7" ry="4" fill="#ffffff" opacity="0.25"/>
+              <path d="M 72 65 A 38 38 0 0 1 125 50" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
+              <ellipse cx="100" cy="80" rx="68" ry="16" fill="none" stroke="url(#ringGrad1)" stroke-width="4.5" transform="rotate(-18 100 80)" stroke-dasharray="210" stroke-dashoffset="0"/>
+            </g>
+            <path class="twinkle-star" d="M152 42 L154 47 L159 49 L154 51 L152 56 L150 51 L145 49 L150 47 Z" fill="#fca5ba"/>
+            <circle cx="48" cy="115" r="2" fill="#fca5ba" opacity="0.8"/>
+            <circle cx="160" cy="110" r="1.5" fill="#fca5ba" opacity="0.6"/>
+          </svg>
+        </div>
+        <h2 class="project-name">Proyecto 1</h2>
+        <p class="project-desc"></p>
+      </div>
+      <a href="https://github.com/zainaahui/lamina.licuadora" target="_blank" rel="noopener noreferrer" class="btn">Ver en GitHub ↗</a>
+    </article>
+
+    <!-- PLANETA 2 -->
+    <article class="card">
+      <div>
+        <div class="illustration-wrapper">
+          <svg class="planet-svg" viewBox="0 0 200 160">
+            <defs>
+              <linearGradient id="planetGrad2" x1="20%" y1="0%" x2="80%" y2="100%">
+                <stop offset="0%" stop-color="#ffe3ec"/>
+                <stop offset="50%" stop-color="#fca1ba"/>
+                <stop offset="100%" stop-color="#e06286"/>
+              </linearGradient>
+            </defs>
+            <circle cx="100" cy="80" r="54" fill="#ffeaf0" opacity="0.6"/>
+            <ellipse cx="100" cy="80" rx="62" ry="24" fill="none" stroke="#f4b2c4" stroke-width="1.8" stroke-dasharray="4 4" transform="rotate(22 100 80)"/>
+            <g class="planet-group">
+              <circle cx="100" cy="80" r="35" fill="url(#planetGrad2)"/>
+              <path d="M 75 66 A 35 35 0 0 1 122 55" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" opacity="0.55"/>
+              <circle cx="88" cy="94" r="5" fill="#ffffff" opacity="0.25"/>
+              <circle cx="114" cy="74" r="7" fill="#ffffff" opacity="0.2"/>
+              <circle cx="152" cy="62" r="7.5" fill="#fcdfe7" stroke="#ea7697" stroke-width="1.5"/>
+            </g>
+            <path class="twinkle-star" d="M46 38 L47.5 42 L51.5 43.5 L47.5 45 L46 49 L44.5 45 L40.5 43.5 L44.5 42 Z" fill="#fca5ba"/>
+            <circle cx="158" cy="120" r="2" fill="#fca5ba" opacity="0.8"/>
+          </svg>
+        </div> 
+        <h2 class="project-name">Proyecto 2 - Aves de Chile</h2>
+        <p class="project-desc"></p>
+      </div> 
+      <a href="https://bigkokoz.github.io/Aves-de-Chile/" target="_blank" rel="noopener noreferrer" class="btn">Ver en GitHub ↗</a>
+    </article>
+
+    <!-- PLANETA 3 -->
+    <article class="card">
+      <div>
+        <div class="illustration-wrapper">
+          <svg class="planet-svg" viewBox="0 0 200 160">
+            <defs>
+              <linearGradient id="planetGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ffcad6"/>
+                <stop offset="100%" stop-color="#de6085"/>
+              </linearGradient>
+              <clipPath id="planetClip">
+                <circle cx="100" cy="80" r="38"/>
+              </clipPath>
+            </defs>
+            <circle cx="100" cy="80" r="54" fill="#ffeaf0" opacity="0.6"/>
+            <g class="planet-group">
+              <circle cx="100" cy="80" r="38" fill="url(#planetGrad3)"/>
+              <g clip-path="url(#planetClip)">
+                <path d="M 50 65 Q 90 78 150 60 Q 110 52 50 65 Z" fill="#ffffff" opacity="0.3"/>
+                <path d="M 50 82 Q 100 95 150 78 Q 110 70 50 82 Z" fill="#ffffff" opacity="0.25"/>
+                <path d="M 50 100 Q 95 110 150 95 Q 110 88 50 100 Z" fill="#ffffff" opacity="0.2"/>
+              </g>
+              <circle cx="100" cy="80" r="38" fill="none" stroke="#f6b8ca" stroke-width="1.5"/>
+              <path d="M 72 63 A 38 38 0 0 1 125 50" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
+            </g>
+            <path class="twinkle-star" d="M156 36 L158 40 L162 41.5 L158 43 L156 47 L154 43 L150 41.5 L154 40 Z" fill="#fca5ba"/>
+            <circle cx="42" cy="65" r="2" fill="#fca5ba" opacity="0.8"/>
+            <circle cx="58" cy="120" r="1.5" fill="#fca5ba" opacity="0.6"/>
+          </svg>
+        </div>
+        <h2 class="project-name">Sintetizador Max</h2>
+        <p class="project-desc">Creación e interacción con texturas de audio digital.</p>
+      </div>
+      <a href="https://github.com/zainaahui/clase18agost" target="_blank" rel="noopener noreferrer" class="btn">Ver en GitHub ↗</a>
+    </article>
+
+    <!-- PLANETA 4 -->
+    <article class="card">
+      <div>
+        <div class="illustration-wrapper">
+          <svg class="planet-svg" viewBox="0 0 200 160">
+            <defs>
+              <linearGradient id="planetGrad4" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#f883a0"/>
+                <stop offset="60%" stop-color="#ffb0c2"/>
+                <stop offset="100%" stop-color="#ffe6ed"/>
+              </linearGradient>
+            </defs>
+            <circle cx="100" cy="80" r="54" fill="#ffeaf0" opacity="0.6"/>
+            <g class="planet-group">
+              <ellipse cx="100" cy="80" rx="72" ry="20" fill="none" stroke="#f6b1c3" stroke-width="1.8" transform="rotate(-30 100 80)" opacity="0.7"/>
+              <ellipse cx="100" cy="80" rx="58" ry="14" fill="none" stroke="#ea7697" stroke-width="3" transform="rotate(-30 100 80)" stroke-dasharray="180" stroke-dashoffset="90"/>
+              <circle cx="100" cy="80" r="36" fill="url(#planetGrad4)"/>
+              <path d="M 76 60 A 36 36 0 0 1 126 55" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+              <ellipse cx="88" cy="82" rx="9" ry="5" fill="#ffffff" opacity="0.25"/>
+              <ellipse cx="100" cy="80" rx="58" ry="14" fill="none" stroke="#ea7697" stroke-width="3" transform="rotate(-30 100 80)" stroke-dasharray="180" stroke-dashoffset="0"/>
+            </g>
+            <path class="twinkle-star" d="M148 118 L149.5 122 L153.5 123.5 L149.5 125 L148 129 L146.5 125 L142.5 123.5 L146.5 122 Z" fill="#fca5ba"/>
+            <circle cx="52" cy="45" r="2.5" fill="#fca5ba" opacity="0.85"/>
+          </svg>
+        </div>
+        <h2 class="project-name">Sonificación</h2>
+        <p class="project-desc">Canción con bases de datos y Sinfonía Visual.</p>
+      </div>
+      <button class="btn" onclick="openModal()">Explorar Proyecto ↗</button>
+    </article>
+  </main>
+
+  <!-- VENTANA MODAL EMERGENTE -->
+  <div class="modal-overlay" id="sonificacionModal" onclick="closeModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <button class="close-modal" onclick="closeModalDirect()">&times;</button>
+      <h3 class="modal-title">Sonificación</h3>
+      <p class="modal-subtitle">Selecciona la opción que deseas abrir:</p>
+      <div class="modal-options">
+        <a href="https://zainaahui.github.io/sonificacion-de-imagen/" target="_blank" rel="noopener noreferrer" class="btn modal-btn">1. Sinfonía Visual ↗</a>
+        
+        <!-- Reproductor de Audio Directo integrado -->
+        <audio controls class="audio-player">
+          <source src="alcoholicos.mp3" type="audio/mpeg">
+          <source src="sonificacion_imagen/alcoholicos.mp3" type="audio/mpeg">
+          Tu navegador no soporta el reproductor de audio.
+        </audio>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Diseñado en tonos pastel • Galaxia digital de proyectos</p>
+  </footer>
+
+  <script>
+    const modal = document.getElementById('sonificacionModal');
+
+    function openModal() {
+      modal.classList.add('active');
+    }
+
+    function closeModalDirect() {
+      modal.classList.remove('active');
+    }
+
+    function closeModal(event) {
+      if (event.target === modal) {
+        modal.classList.remove('active');
+      }
+    }
+  </script>
+
+</body>
+</html>
