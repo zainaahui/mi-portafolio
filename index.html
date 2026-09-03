@@ -9,13 +9,13 @@
 
     :root {
       --bg-color: #fff1f5;
-      --card-bg: rgba(255, 255, 255, 0.8);
+      --card-bg: rgba(255, 255, 255, 0.75);
       --header-text: #4a2038;
       --sub-text: #7d4d68;
       --btn-bg: #f3a6b8;
       --btn-hover: #d9748f;
       --card-border: rgba(255, 255, 255, 0.95);
-      --shadow-color: rgba(230, 160, 185, 0.25);
+      --shadow-color: rgba(230, 160, 185, 0.28);
     }
 
     * {
@@ -31,6 +31,7 @@
       line-height: 1.6;
       padding: 3rem 1.5rem;
       min-height: 100vh;
+      overflow-x: hidden;
     }
 
     header {
@@ -58,36 +59,87 @@
       margin: 0 auto;
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 2rem;
+      gap: 2.2rem;
     }
 
-    .card {
+    /* --- VENTANA ESTILO MAC --- */
+    .mac-window {
       background: var(--card-bg);
-      border-radius: 28px;
-      padding: 2.2rem 1.6rem;
-      text-align: center;
-      box-shadow: 0 12px 30px var(--shadow-color);
+      border-radius: 18px;
+      box-shadow: 0 16px 36px var(--shadow-color);
       border: 1px solid var(--card-border);
-      backdrop-filter: blur(14px);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: visible;
+      transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease;
+    }
+
+    .mac-window:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 24px 45px rgba(219, 123, 147, 0.38);
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    /* Barra superior de la ventana */
+    .mac-titlebar {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.6);
+      border-bottom: 1px solid rgba(230, 160, 185, 0.2);
+      border-radius: 18px 18px 0 0;
+      position: relative;
+    }
+
+    .mac-buttons {
+      display: flex;
+      gap: 7px;
+    }
+
+    .mac-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .mac-dot.close { background-color: #ff9fb2; }
+    .mac-dot.minimize { background-color: #ffd29d; }
+    .mac-dot.maximize { background-color: #b7e4c7; }
+
+    .mac-title-text {
+      position: absolute;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--sub-text);
+      letter-spacing: 0.5px;
+      pointer-events: none;
+      opacity: 0.8;
+    }
+
+    /* Contenido interior */
+    .mac-content {
+      padding: 1.6rem 1.6rem 2rem;
+      text-align: center;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
-    }
-
-    .card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 20px 40px rgba(219, 123, 147, 0.32);
-      background: rgba(255, 255, 255, 0.95);
+      flex: 1;
     }
 
     .illustration-wrapper {
       width: 100%;
-      height: 160px;
+      height: 150px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 1.2rem;
+      margin-bottom: 1rem;
     }
 
     .planet-svg {
@@ -101,11 +153,11 @@
       transform-origin: center center;
     }
 
-    .card:hover .planet-group {
+    .mac-window:hover .planet-group {
       transform: translateY(-6px) scale(1.06) rotate(3deg);
     }
 
-    .card:hover .twinkle-star {
+    .mac-window:hover .twinkle-star {
       animation: pulse 1.2s infinite alternate ease-in-out;
     }
 
@@ -119,7 +171,7 @@
       font-size: 1.5rem;
       font-weight: 700;
       color: var(--header-text);
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.4rem;
     }
 
     .project-desc {
@@ -152,6 +204,29 @@
       transform: translateY(-2px);
     }
 
+    /* --- EFECTO DE CHISPAS Y BRILLITOS --- */
+    .sparkle {
+      position: absolute;
+      pointer-events: none;
+      z-index: 10;
+      animation: sparkleFade 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+
+    @keyframes sparkleFade {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.2) rotate(0deg);
+      }
+      50% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.2) rotate(90deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(calc(-50% + var(--tx, 0px)), calc(-50% + var(--ty, -25px))) scale(0.4) rotate(180deg);
+      }
+    }
+
     /* --- ESTILOS DEL MODAL --- */
     .modal-overlay {
       position: fixed;
@@ -176,7 +251,7 @@
 
     .modal-box {
       background: #ffffff;
-      border-radius: 24px;
+      border-radius: 20px;
       padding: 2.5rem 2rem;
       max-width: 380px;
       width: 90%;
@@ -259,142 +334,177 @@
   </header>
 
   <main class="container">
-    <!-- PLANETA 1 -->
-    <article class="card">
-      <div>
-        <div class="illustration-wrapper">
-          <svg class="planet-svg" viewBox="0 0 200 160">
-            <defs>
-              <linearGradient id="planetGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#ffccd5"/>
-                <stop offset="60%" stop-color="#f48ca7"/>
-                <stop offset="100%" stop-color="#d65d82"/>
-              </linearGradient>
-              <linearGradient id="ringGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#fbd0d9" stop-opacity="0.2"/>
-                <stop offset="50%" stop-color="#fbd0d9" stop-opacity="0.95"/>
-                <stop offset="100%" stop-color="#fbd0d9" stop-opacity="0.2"/>
-              </linearGradient>
-            </defs>
-            <circle cx="100" cy="80" r="54" fill="#ffeaf0" opacity="0.6"/>
-            <g class="planet-group">
-              <ellipse cx="100" cy="80" rx="68" ry="16" fill="none" stroke="url(#ringGrad1)" stroke-width="4.5" transform="rotate(-18 100 80)" stroke-dasharray="210" stroke-dashoffset="105"/>
-              <circle cx="100" cy="80" r="38" fill="url(#planetGrad1)"/>
-              <ellipse cx="112" cy="70" rx="7" ry="4" fill="#ffffff" opacity="0.25"/>
-              <path d="M 72 65 A 38 38 0 0 1 125 50" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
-              <ellipse cx="100" cy="80" rx="68" ry="16" fill="none" stroke="url(#ringGrad1)" stroke-width="4.5" transform="rotate(-18 100 80)" stroke-dasharray="210" stroke-dashoffset="0"/>
-            </g>
-            <path class="twinkle-star" d="M152 42 L154 47 L159 49 L154 51 L152 56 L150 51 L145 49 L150 47 Z" fill="#fca5ba"/>
-            <circle cx="48" cy="115" r="2" fill="#fca5ba" opacity="0.8"/>
-            <circle cx="160" cy="110" r="1.5" fill="#fca5ba" opacity="0.6"/>
-          </svg>
+    <article class="mac-window">
+      <div class="mac-titlebar">
+        <div class="mac-buttons">
+          <span class="mac-dot close"></span>
+          <span class="mac-dot minimize"></span>
+          <span class="mac-dot maximize"></span>
         </div>
-        <h2 class="project-name">Proyecto 1</h2>
-        <p class="project-desc"></p>
+        <span class="mac-title-text">licuadora.app</span>
       </div>
-      <a href="https://github.com/zainaahui/lamina.licuadora" target="_blank" rel="noopener noreferrer" class="btn">Ver en GitHub ↗</a>
-    </article>
-
-    <!-- PLANETA 2 -->
-    <article class="card">
-      <div>
-        <div class="illustration-wrapper">
-          <svg class="planet-svg" viewBox="0 0 200 160">
-            <defs>
-              <linearGradient id="planetGrad2" x1="20%" y1="0%" x2="80%" y2="100%">
-                <stop offset="0%" stop-color="#ffe3ec"/>
-                <stop offset="50%" stop-color="#fca1ba"/>
-                <stop offset="100%" stop-color="#e06286"/>
-              </linearGradient>
-            </defs>
-            <circle cx="100" cy="80" r="54" fill="#ffeaf0" opacity="0.6"/>
-            <ellipse cx="100" cy="80" rx="62" ry="24" fill="none" stroke="#f4b2c4" stroke-width="1.8" stroke-dasharray="4 4" transform="rotate(22 100 80)"/>
-            <g class="planet-group">
-              <circle cx="100" cy="80" r="35" fill="url(#planetGrad2)"/>
-              <path d="M 75 66 A 35 35 0 0 1 122 55" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" opacity="0.55"/>
-              <circle cx="88" cy="94" r="5" fill="#ffffff" opacity="0.25"/>
-              <circle cx="114" cy="74" r="7" fill="#ffffff" opacity="0.2"/>
-              <circle cx="152" cy="62" r="7.5" fill="#fcdfe7" stroke="#ea7697" stroke-width="1.5"/>
-            </g>
-            <path class="twinkle-star" d="M46 38 L47.5 42 L51.5 43.5 L47.5 45 L46 49 L44.5 45 L40.5 43.5 L44.5 42 Z" fill="#fca5ba"/>
-            <circle cx="158" cy="120" r="2" fill="#fca5ba" opacity="0.8"/>
-          </svg>
-        </div> 
-        <h2 class="project-name">Proyecto 2 - Aves de Chile</h2>
-        <p class="project-desc"></p>
-      </div> 
-      <a href="https://bigkokoz.github.io/Aves-de-Chile/" target="_blank" rel="noopener noreferrer" class="btn">Ver en GitHub ↗</a>
-    </article>
-
-    <!-- PLANETA 3 -->
-    <article class="card">
-      <div>
-        <div class="illustration-wrapper">
-          <svg class="planet-svg" viewBox="0 0 200 160">
-            <defs>
-              <linearGradient id="planetGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#ffcad6"/>
-                <stop offset="100%" stop-color="#de6085"/>
-              </linearGradient>
-              <clipPath id="planetClip">
-                <circle cx="100" cy="80" r="38"/>
-              </clipPath>
-            </defs>
-            <circle cx="100" cy="80" r="54" fill="#ffeaf0" opacity="0.6"/>
-            <g class="planet-group">
-              <circle cx="100" cy="80" r="38" fill="url(#planetGrad3)"/>
-              <g clip-path="url(#planetClip)">
-                <path d="M 50 65 Q 90 78 150 60 Q 110 52 50 65 Z" fill="#ffffff" opacity="0.3"/>
-                <path d="M 50 82 Q 100 95 150 78 Q 110 70 50 82 Z" fill="#ffffff" opacity="0.25"/>
-                <path d="M 50 100 Q 95 110 150 95 Q 110 88 50 100 Z" fill="#ffffff" opacity="0.2"/>
+      <div class="mac-content">
+        <div>
+          <div class="illustration-wrapper">
+            <svg class="planet-svg" viewBox="0 0 200 160">
+              <defs>
+                <linearGradient id="planetGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#ffccd5"/>
+                  <stop offset="60%" stop-color="#f48ca7"/>
+                  <stop offset="100%" stop-color="#d65d82"/>
+                </linearGradient>
+                <linearGradient id="ringGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#fbd0d9" stop-opacity="0.2"/>
+                  <stop offset="50%" stop-color="#fbd0d9" stop-opacity="0.95"/>
+                  <stop offset="100%" stop-color="#fbd0d9" stop-opacity="0.2"/>
+                </linearGradient>
+              </defs>
+              <circle cx="100" cy="80" r="54" fill="#ffeaf0" opacity="0.6"/>
+              <g class="planet-group">
+                <ellipse cx="100" cy="80" rx="68" ry="16" fill="none" stroke="url(#ringGrad1)" stroke-width="4.5" transform="rotate(-18 100 80)" stroke-dasharray="210" stroke-dashoffset="105"/>
+                <circle cx="100" cy="80" r="38" fill="url(#planetGrad1)"/>
+                <ellipse cx="112" cy="70" rx="7" ry="4" fill="#ffffff" opacity="0.25"/>
+                <path d="M 72 65 A 38 38 0 0 1 125 50" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
+                <ellipse cx="100" cy="80" rx="68" ry="16" fill="none" stroke="url(#ringGrad1)" stroke-width="4.5" transform="rotate(-18 100 80)" stroke-dasharray="210" stroke-dashoffset="0"/>
               </g>
-              <circle cx="100" cy="80" r="38" fill="none" stroke="#f6b8ca" stroke-width="1.5"/>
-              <path d="M 72 63 A 38 38 0 0 1 125 50" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
-            </g>
-            <path class="twinkle-star" d="M156 36 L158 40 L162 41.5 L158 43 L156 47 L154 43 L150 41.5 L154 40 Z" fill="#fca5ba"/>
-            <circle cx="42" cy="65" r="2" fill="#fca5ba" opacity="0.8"/>
-            <circle cx="58" cy="120" r="1.5" fill="#fca5ba" opacity="0.6"/>
-          </svg>
+              <path class="twinkle-star" d="M152 42 L154 47 L159 49 L154 51 L152 56 L150 51 L145 49 L150 47 Z" fill="#fca5ba"/>
+              <circle cx="48" cy="115" r="2" fill="#fca5ba" opacity="0.8"/>
+              <circle cx="160" cy="110" r="1.5" fill="#fca5ba" opacity="0.6"/>
+            </svg>
+          </div>
+          <h2 class="project-name">Proyecto 1</h2>
+          <p class="project-desc"></p>
         </div>
-        <h2 class="project-name">Sintetizador Max</h2>
-        <p class="project-desc">Creación e interacción con texturas de audio digital.</p>
+        <a href="https://github.com/zainaahui/lamina.licuadora" target="_blank" rel="noopener noreferrer" class="btn">Ver en GitHub ↗</a>
       </div>
-      <a href="https://github.com/zainaahui/clase18agost" target="_blank" rel="noopener noreferrer" class="btn">Ver en GitHub ↗</a>
     </article>
 
-    <!-- PLANETA 4 -->
-    <article class="card">
-      <div>
-        <div class="illustration-wrapper">
-          <svg class="planet-svg" viewBox="0 0 200 160">
-            <defs>
-              <linearGradient id="planetGrad4" x1="0%" y1="100%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#f883a0"/>
-                <stop offset="60%" stop-color="#ffb0c2"/>
-                <stop offset="100%" stop-color="#ffe6ed"/>
-              </linearGradient>
-            </defs>
-            <circle cx="100" cy="80" r="54" fill="#ffeaf0" opacity="0.6"/>
-            <g class="planet-group">
-              <ellipse cx="100" cy="80" rx="72" ry="20" fill="none" stroke="#f6b1c3" stroke-width="1.8" transform="rotate(-30 100 80)" opacity="0.7"/>
-              <ellipse cx="100" cy="80" rx="58" ry="14" fill="none" stroke="#ea7697" stroke-width="3" transform="rotate(-30 100 80)" stroke-dasharray="180" stroke-dashoffset="90"/>
-              <circle cx="100" cy="80" r="36" fill="url(#planetGrad4)"/>
-              <path d="M 76 60 A 36 36 0 0 1 126 55" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
-              <ellipse cx="88" cy="82" rx="9" ry="5" fill="#ffffff" opacity="0.25"/>
-              <ellipse cx="100" cy="80" rx="58" ry="14" fill="none" stroke="#ea7697" stroke-width="3" transform="rotate(-30 100 80)" stroke-dasharray="180" stroke-dashoffset="0"/>
-            </g>
-            <path class="twinkle-star" d="M148 118 L149.5 122 L153.5 123.5 L149.5 125 L148 129 L146.5 125 L142.5 123.5 L146.5 122 Z" fill="#fca5ba"/>
-            <circle cx="52" cy="45" r="2.5" fill="#fca5ba" opacity="0.85"/>
-          </svg>
+    <article class="mac-window">
+      <div class="mac-titlebar">
+        <div class="mac-buttons">
+          <span class="mac-dot close"></span>
+          <span class="mac-dot minimize"></span>
+          <span class="mac-dot maximize"></span>
         </div>
-        <h2 class="project-name">Sonificación</h2>
-        <p class="project-desc">Canción con bases de datos y Sinfonía Visual.</p>
+        <span class="mac-title-text">aves-chile.app</span>
       </div>
-      <button class="btn" onclick="openModal()">Explorar Proyecto ↗</button>
+      <div class="mac-content">
+        <div>
+          <div class="illustration-wrapper">
+            <svg class="planet-svg" viewBox="0 0 200 160">
+              <defs>
+                <linearGradient id="planetGrad2" x1="20%" y1="0%" x2="80%" y2="100%">
+                  <stop offset="0%" stop-color="#ffe3ec"/>
+                  <stop offset="50%" stop-color="#fca1ba"/>
+                  <stop offset="100%" stop-color="#e06286"/>
+                </linearGradient>
+              </defs>
+              <circle cx="100" cy="80" r="54" fill="#ffeaf0" opacity="0.6"/>
+              <ellipse cx="100" cy="80" rx="62" ry="24" fill="none" stroke="#f4b2c4" stroke-width="1.8" stroke-dasharray="4 4" transform="rotate(22 100 80)"/>
+              <g class="planet-group">
+                <circle cx="100" cy="80" r="35" fill="url(#planetGrad2)"/>
+                <path d="M 75 66 A 35 35 0 0 1 122 55" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" opacity="0.55"/>
+                <circle cx="88" cy="94" r="5" fill="#ffffff" opacity="0.25"/>
+                <circle cx="114" cy="74" r="7" fill="#ffffff" opacity="0.2"/>
+                <circle cx="152" cy="62" r="7.5" fill="#fcdfe7" stroke="#ea7697" stroke-width="1.5"/>
+              </g>
+              <path class="twinkle-star" d="M46 38 L47.5 42 L51.5 43.5 L47.5 45 L46 49 L44.5 45 L40.5 43.5 L44.5 42 Z" fill="#fca5ba"/>
+              <circle cx="158" cy="120" r="2" fill="#fca5ba" opacity="0.8"/>
+            </svg>
+          </div> 
+          <h2 class="project-name">Proyecto 2 - Aves de Chile</h2>
+          <p class="project-desc"></p>
+        </div> 
+        <a href="https://bigkokoz.github.io/Aves-de-Chile/" target="_blank" rel="noopener noreferrer" class="btn">Ver en GitHub ↗</a>
+      </div>
+    </article>
+
+    <article class="mac-window">
+      <div class="mac-titlebar">
+        <div class="mac-buttons">
+          <span class="mac-dot close"></span>
+          <span class="mac-dot minimize"></span>
+          <span class="mac-dot maximize"></span>
+        </div>
+        <span class="mac-title-text">sintetizador.max</span>
+      </div>
+      <div class="mac-content">
+        <div>
+          <div class="illustration-wrapper">
+            <svg class="planet-svg" viewBox="0 0 200 160">
+              <defs>
+                <linearGradient id="planetGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#ffcad6"/>
+                  <stop offset="100%" stop-color="#de6085"/>
+                </linearGradient>
+                <clipPath id="planetClip">
+                  <circle cx="100" cy="80" r="38"/>
+                </clipPath>
+              </defs>
+              <circle cx="100" cy="80" r="54" fill="#ffeaf0" opacity="0.6"/>
+              <g class="planet-group">
+                <circle cx="100" cy="80" r="38" fill="url(#planetGrad3)"/>
+                <g clip-path="url(#planetClip)">
+                  <path d="M 50 65 Q 90 78 150 60 Q 110 52 50 65 Z" fill="#ffffff" opacity="0.3"/>
+                  <path d="M 50 82 Q 100 95 150 78 Q 110 70 50 82 Z" fill="#ffffff" opacity="0.25"/>
+                  <path d="M 50 100 Q 95 110 150 95 Q 110 88 50 100 Z" fill="#ffffff" opacity="0.2"/>
+                </g>
+                <circle cx="100" cy="80" r="38" fill="none" stroke="#f6b8ca" stroke-width="1.5"/>
+                <path d="M 72 63 A 38 38 0 0 1 125 50" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
+              </g>
+              <path class="twinkle-star" d="M156 36 L158 40 L162 41.5 L158 43 L156 47 L154 43 L150 41.5 L154 40 Z" fill="#fca5ba"/>
+              <circle cx="42" cy="65" r="2" fill="#fca5ba" opacity="0.8"/>
+              <circle cx="58" cy="120" r="1.5" fill="#fca5ba" opacity="0.6"/>
+            </svg>
+          </div>
+          <h2 class="project-name">Sintetizador Max</h2>
+          <p class="project-desc">Creación e interacción con texturas de audio digital.</p>
+        </div>
+        <a href="https://github.com/zainaahui/clase18agost" target="_blank" rel="noopener noreferrer" class="btn">Ver en GitHub ↗</a>
+      </div>
+    </article>
+
+    <article class="mac-window">
+      <div class="mac-titlebar">
+        <div class="mac-buttons">
+          <span class="mac-dot close"></span>
+          <span class="mac-dot minimize"></span>
+          <span class="mac-dot maximize"></span>
+        </div>
+        <span class="mac-title-text">sonificacion.audio</span>
+      </div>
+      <div class="mac-content">
+        <div>
+          <div class="illustration-wrapper">
+            <svg class="planet-svg" viewBox="0 0 200 160">
+              <defs>
+                <linearGradient id="planetGrad4" x1="0%" y1="100%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#f883a0"/>
+                  <stop offset="60%" stop-color="#ffb0c2"/>
+                  <stop offset="100%" stop-color="#ffe6ed"/>
+                </linearGradient>
+              </defs>
+              <circle cx="100" cy="80" r="54" fill="#ffeaf0" opacity="0.6"/>
+              <g class="planet-group">
+                <ellipse cx="100" cy="80" rx="72" ry="20" fill="none" stroke="#f6b1c3" stroke-width="1.8" transform="rotate(-30 100 80)" opacity="0.7"/>
+                <ellipse cx="100" cy="80" rx="58" ry="14" fill="none" stroke="#ea7697" stroke-width="3" transform="rotate(-30 100 80)" stroke-dasharray="180" stroke-dashoffset="90"/>
+                <circle cx="100" cy="80" r="36" fill="url(#planetGrad4)"/>
+                <path d="M 76 60 A 36 36 0 0 1 126 55" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+                <ellipse cx="88" cy="82" rx="9" ry="5" fill="#ffffff" opacity="0.25"/>
+                <ellipse cx="100" cy="80" rx="58" ry="14" fill="none" stroke="#ea7697" stroke-width="3" transform="rotate(-30 100 80)" stroke-dasharray="180" stroke-dashoffset="0"/>
+              </g>
+              <path class="twinkle-star" d="M148 118 L149.5 122 L153.5 123.5 L149.5 125 L148 129 L146.5 125 L142.5 123.5 L146.5 122 Z" fill="#fca5ba"/>
+              <circle cx="52" cy="45" r="2.5" fill="#fca5ba" opacity="0.85"/>
+            </svg>
+          </div>
+          <h2 class="project-name">Sonificación</h2>
+          <p class="project-desc">Canción con bases de datos y Sinfonía Visual.</p>
+        </div>
+        <button class="btn" onclick="openModal()">Explorar Proyecto ↗</button>
+      </div>
     </article>
   </main>
 
-  <!-- VENTANA MODAL EMERGENTE -->
   <div class="modal-overlay" id="sonificacionModal" onclick="closeModal(event)">
     <div class="modal-box" onclick="event.stopPropagation()">
       <button class="close-modal" onclick="closeModalDirect()">&times;</button>
@@ -402,8 +512,6 @@
       <p class="modal-subtitle">Selecciona la opción que deseas abrir:</p>
       <div class="modal-options">
         <a href="https://zainaahui.github.io/sonificacion-de-imagen/" target="_blank" rel="noopener noreferrer" class="btn modal-btn">1. Sinfonía Visual ↗</a>
-        
-        <!-- Reproductor de Audio Directo integrado -->
         <audio controls class="audio-player">
           <source src="alcoholicos.mp3" type="audio/mpeg">
           <source src="sonificacion_imagen/alcoholicos.mp3" type="audio/mpeg">
@@ -418,6 +526,7 @@
   </footer>
 
   <script>
+    // --- LÓGICA DEL MODAL ---
     const modal = document.getElementById('sonificacionModal');
 
     function openModal() {
@@ -433,6 +542,55 @@
         modal.classList.remove('active');
       }
     }
+
+    // --- EFECTO DE BRILLITOS INTERACTIVOS (SPARKLES) ---
+    const pastelSparkleColors = ['#fca5ba', '#ffd29d', '#ffccd5', '#b7e4c7', '#ffffff'];
+    const cards = document.querySelectorAll('.mac-window');
+
+    cards.forEach(card => {
+      let throttleTimer = false;
+
+      function spawnSparkle(e) {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        const sparkle = document.createElement('div');
+        sparkle.classList.add('sparkle');
+
+        const size = Math.floor(Math.random() * 10) + 12; // Tamaño 12px - 22px
+        const color = pastelSparkleColors[Math.floor(Math.random() * pastelSparkleColors.length)];
+        const tx = (Math.random() - 0.5) * 50; // Desplazamiento X aleatorio
+        const ty = (Math.random() - 0.8) * 45; // Flotar hacia arriba
+
+        sparkle.style.left = `${x}px`;
+        sparkle.style.top = `${y}px`;
+        sparkle.style.setProperty('--tx', `${tx}px`);
+        sparkle.style.setProperty('--ty', `${ty}px`);
+
+        sparkle.innerHTML = `
+          <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${color}">
+            <path d="M12 0L14.4 8.6L23 11L14.4 13.4L12 22L9.6 13.4L1 11L9.6 8.6Z" />
+          </svg>
+        `;
+
+        card.appendChild(sparkle);
+
+        setTimeout(() => {
+          sparkle.remove();
+        }, 900);
+      }
+
+      card.addEventListener('mousemove', (e) => {
+        if (!throttleTimer) {
+          spawnSparkle(e);
+          throttleTimer = true;
+          setTimeout(() => {
+            throttleTimer = false;
+          }, 80); // Frecuencia de generación
+        }
+      });
+    });
   </script>
 
 </body>
