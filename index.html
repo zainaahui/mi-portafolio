@@ -1,730 +1,971 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NUI &amp; MediaPipe · Cara, Cuerpo y Manos</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <!-- MediaPipe Dependencies -->
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Portafolio - Universo Pastel</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap');
+
+    :root {
+      --bg-color: #fff1f5;
+      --card-bg: rgba(255, 255, 255, 0.75);
+      --header-text: #4a2038;
+      --sub-text: #7d4d68;
+      --btn-bg: #f3a6b8;
+      --btn-hover: #d9748f;
+      --card-border: rgba(255, 255, 255, 0.95);
+      --shadow-color: rgba(230, 160, 185, 0.28);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: radial-gradient(circle at top right, #ffe6ee 0%, #fff1f5 55%, #f6e3ec 100%);
+      color: var(--header-text);
+      line-height: 1.6;
+      padding: 3rem 1.5rem;
+      min-height: 100vh;
       overflow-x: hidden;
     }
-    .glass-panel {
-      background: rgba(15, 23, 42, 0.85);
+
+    header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+
+    header h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 3.4rem;
+      font-weight: 700;
+      color: var(--header-text);
+      letter-spacing: 0.5px;
+      margin-bottom: 0.3rem;
+    }
+
+    header p {
+      color: var(--sub-text);
+      font-size: 1.1rem;
+      font-style: italic;
+    }
+
+    .container {
+      max-width: 1050px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 2.2rem;
+    }
+
+    /* --- VENTANA ESTILO MAC --- */
+    .mac-window {
+      background: var(--card-bg);
+      border-radius: 18px;
+      box-shadow: 0 16px 36px var(--shadow-color);
+      border: 1px solid var(--card-border);
       backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      -webkit-backdrop-filter: blur(16px);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: visible;
+      transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease;
     }
-    video, canvas.overlay {
-      transform: scaleX(-1);
+
+    .mac-window:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 24px 45px rgba(219, 123, 147, 0.38);
+      background: rgba(255, 255, 255, 0.9);
     }
-    @keyframes haloGlow {
-      0%, 100% { filter: drop-shadow(0 0 15px rgba(234, 179, 8, 0.8)) drop-shadow(0 0 30px rgba(250, 204, 21, 0.6)); }
-      50% { filter: drop-shadow(0 0 25px rgba(234, 179, 8, 1)) drop-shadow(0 0 45px rgba(253, 224, 71, 0.9)); }
+
+    /* Barra superior de la ventana */
+    .mac-titlebar {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.6);
+      border-bottom: 1px solid rgba(230, 160, 185, 0.2);
+      border-radius: 18px 18px 0 0;
+      position: relative;
     }
-    @keyframes devilFire {
-      0%, 100% { filter: drop-shadow(0 0 15px rgba(239, 68, 68, 0.9)) drop-shadow(0 0 30px rgba(220, 38, 38, 0.7)); }
-      50% { filter: drop-shadow(0 0 25px rgba(248, 113, 113, 1)) drop-shadow(0 0 50px rgba(185, 28, 28, 0.9)); }
+
+    .mac-buttons {
+      display: flex;
+      gap: 7px;
     }
-    @keyframes heartPulse {
-      0%, 100% { filter: drop-shadow(0 0 15px rgba(244, 63, 94, 0.8)); }
-      50% { filter: drop-shadow(0 0 30px rgba(236, 72, 153, 0.9)); }
+
+    .mac-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      display: inline-block;
     }
-    .halo-effect { animation: haloGlow 3s ease-in-out infinite; }
-    .devil-effect { animation: devilFire 2.5s ease-in-out infinite; }
-    .heart-glow { animation: heartPulse 1.5s infinite ease-in-out; }
+
+    .mac-dot.close { background-color: #ff9fb2; }
+    .mac-dot.minimize { background-color: #ffd29d; }
+    .mac-dot.maximize { background-color: #b7e4c7; }
+
+    .mac-title-text {
+      position: absolute;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--sub-text);
+      letter-spacing: 0.5px;
+      pointer-events: none;
+      opacity: 0.8;
+    }
+
+    /* Contenido interior */
+    .mac-content {
+      padding: 1.6rem 1.6rem 2rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex: 1;
+    }
+
+    .illustration-wrapper {
+      width: 100%;
+      height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+
+    .planet-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .planet-group {
+      transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+      transform-origin: center center;
+    }
+
+    .mac-window:hover .planet-group {
+      transform: translateY(-6px) scale(1.06) rotate(3deg);
+    }
+
+    .mac-window:hover .twinkle-star {
+      animation: pulse 1.2s infinite alternate ease-in-out;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.3; transform: scale(0.85); }
+      100% { opacity: 1; transform: scale(1.25); }
+    }
+
+    .project-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--header-text);
+      margin-bottom: 0.4rem;
+    }
+
+    .project-desc {
+      font-size: 0.9rem;
+      color: var(--sub-text);
+      margin-bottom: 1.6rem;
+      min-height: 2.4rem;
+    }
+
+    .btn {
+      display: inline-block;
+      text-decoration: none;
+      background-color: var(--btn-bg);
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 0.75rem 1.6rem;
+      border-radius: 50px;
+      transition: all 0.25s ease;
+      letter-spacing: 0.3px;
+      box-shadow: 0 4px 14px rgba(243, 166, 184, 0.45);
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .btn:hover {
+      background-color: var(--btn-hover);
+      box-shadow: 0 6px 18px rgba(219, 123, 147, 0.6);
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background-color: #ffe4ec;
+      color: var(--header-text);
+      box-shadow: 0 4px 12px rgba(230, 160, 185, 0.25);
+    }
+
+    .btn-secondary:hover {
+      background-color: #fbd0de;
+      color: var(--header-text);
+    }
+
+    /* --- EFECTO DE CHISPAS Y BRILLITOS --- */
+    .sparkle {
+      position: absolute;
+      pointer-events: none;
+      z-index: 10;
+      animation: sparkleFade 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+
+    @keyframes sparkleFade {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.2) rotate(0deg);
+      }
+      50% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.2) rotate(90deg);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(calc(-50% + var(--tx, 0px)), calc(-50% + var(--ty, -25px))) scale(0.4) rotate(180deg);
+      }
+    }
+
+    /* --- ESTILOS DEL MODAL --- */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(74, 32, 56, 0.35);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .modal-box {
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 2.5rem 2rem;
+      max-width: 380px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(74, 32, 56, 0.25);
+      border: 1px solid var(--card-border);
+      position: relative;
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.85); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--header-text);
+      margin-bottom: 0.4rem;
+    }
+
+    .modal-subtitle {
+      font-size: 0.9rem;
+      color: var(--sub-text);
+      margin-bottom: 1.5rem;
+    }
+
+    .modal-options {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .modal-btn {
+      width: 100%;
+      text-align: center;
+    }
+
+    .marker-preview-box {
+      background: #fff7fa;
+      border: 1px dashed #f3a6b8;
+      border-radius: 14px;
+      padding: 0.75rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .marker-preview-img {
+      width: 150px;
+      height: 150px;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+
+    .audio-player {
+      width: 100%;
+      margin-top: 0.5rem;
+      outline: none;
+      border-radius: 30px;
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 1rem;
+      right: 1.2rem;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--sub-text);
+      cursor: pointer;
+      line-height: 1;
+      padding: 0.2rem;
+      transition: color 0.2s;
+    }
+
+    .close-modal:hover {
+      color: var(--header-text);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 4.5rem;
+      font-size: 0.9rem;
+      color: var(--sub-text);
+      font-style: italic;
+    }
   </style>
 </head>
-<body id="body-theme" class="bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 min-h-screen text-slate-100 flex flex-col items-center justify-between p-4 md:p-8 transition-colors duration-700">
+<body>
 
-  <!-- Modal de aviso -->
-  <div id="modal-overlay" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
-    <div class="glass-panel p-6 rounded-3xl max-w-sm w-full text-center text-slate-100 shadow-2xl transform scale-95 transition-transform duration-300" id="modal-content">
-      <div id="modal-icon" class="text-4xl mb-3">⚠️</div>
-      <h3 id="modal-title" class="text-lg font-bold mb-2">Aviso</h3>
-      <p id="modal-message" class="text-sm text-slate-300 mb-6">Mensaje descriptivo aquí.</p>
-      <button type="button" onclick="closeModal()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold text-sm shadow-lg hover:opacity-90 active:scale-95 transition">Entendido</button>
+  <header>
+    <h1>Mi Portafolio</h1>
+    <p>Proyectos y constelaciones de código</p>
+    <p>Hecho por Zainah Corvalan</p>
+  </header>
+
+  <main class="container">
+    <!-- Proyecto 1 (Licuadora) -->
+    <article class="mac-window">
+      <div class="mac-titlebar">
+        <div class="mac-buttons">
+          <span class="mac-dot close"></span>
+          <span class="mac-dot minimize"></span>
+          <span class="mac-dot maximize"></span>
+        </div>
+        <span class="mac-title-text">licuadora.app</span>
+      </div>
+      <div class="mac-content">
+        <div>
+          <div class="illustration-wrapper">
+            <svg class="planet-svg" viewBox="0 0 200 160">
+              <defs>
+                <linearGradient id="planetGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#ffccd5"/>
+                  <stop offset="60%" stop-color="#f48ca7"/>
+                  <stop offset="100%" stop-color="#d65d82"/>
+                </linearGradient>
+                <linearGradient id="ringGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#fbd0d9" stop-opacity="0.2"/>
+                  <stop offset="50%" stop-color="#fbd0d9" stop-opacity="0.95"/>
+                  <stop offset="100%" stop-color="#fbd0d9" stop-opacity="0.2"/>
+                </linearGradient>
+              </defs>
+              <circle cx="100" cy="80" r="54" fill="#ffeaf0" opacity="0.6"/>
+              <g class="planet-group">
+                <ellipse cx="100" cy="80" rx="68" ry="16" fill="none" stroke="url(#ringGrad1)" stroke-width="4.5" transform="rotate(-18 100 80)" stroke-dasharray="210" stroke-dashoffset="105"/>
+                <circle cx="100" cy="80" r="38" fill="url(#planetGrad1)"/>
+                <ellipse cx="112" cy="70" rx="7" ry="4" fill="#ffffff" opacity="0.25"/>
+                <path d="M 72 65 A 38 38 0 0 1 125 50" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
+                <ellipse cx="100" cy="80" rx="68" ry="16" fill="none" stroke="url(#ringGrad1)" stroke-width="4.5" transform="rotate(-18 100 80)" stroke-dasharray="210" stroke-dashoffset="0"/>
+              </g>
+              <path class="twinkle-star" d="M152 42 L154 47 L159 49 L154 51 L152 56 L150 51 L145 49 L150 47 Z" fill="#fca5ba"/>
+              <circle cx="48" cy="115" r="2" fill="#fca5ba" opacity="0.8"/>
+              <circle cx="160" cy="110" r="1.5" fill="#fca5ba" opacity="0.6"/>
+            </svg>
+          </div>
+          <h2 class="project-name">Proyecto 1</h2>
+          <p class="project-desc"></p>
+        </div>
+        <a href="https://github.com/zainaahui/lamina.licuadora" target="_blank" rel="noopener noreferrer" class="btn">Ver en GitHub ↗</a>
+      </div>
+    </article>
+
+    <!-- Proyecto 2 (Aves de Chile) -->
+    <article class="mac-window">
+      <div class="mac-titlebar">
+        <div class="mac-buttons">
+          <span class="mac-dot close"></span>
+          <span class="mac-dot minimize"></span>
+          <span class="mac-dot maximize"></span>
+        </div>
+        <span class="mac-title-text">aves-chile.app</span>
+      </div>
+      <div class="mac-content">
+        <div>
+          <div class="illustration-wrapper">
+            <svg class="planet-svg" viewBox="0 0 200 160">
+              <defs>
+                <linearGradient id="planetGrad2" x1="20%" y1="0%" x2="80%" y2="100%">
+                  <stop offset="0%" stop-color="#ffe3ec"/>
+                  <stop offset="50%" stop-color="#fca1ba"/>
+                  <stop offset="100%" stop-color="#e06286"/>
+                </linearGradient>
+              </defs>
+              <circle cx="100" cy="80" r="54" fill="#ffeaf0" opacity="0.6"/>
+              <ellipse cx="100" cy="80" rx="62" ry="24" fill="none" stroke="#f4b2c4" stroke-width="1.8" stroke-dasharray="4 4" transform="rotate(22 100 80)"/>
+              <g class="planet-group">
+                <circle cx="100" cy="80" r="35" fill="url(#planetGrad2)"/>
+                <path d="M 75 66 A 35 35 0 0 1 122 55" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" opacity="0.55"/>
+                <circle cx="88" cy="94" r="5" fill="#ffffff" opacity="0.25"/>
+                <circle cx="114" cy="74" r="7" fill="#ffffff" opacity="0.2"/>
+                <circle cx="152" cy="62" r="7.5" fill="#fcdfe7" stroke="#ea7697" stroke-width="1.5"/>
+              </g>
+              <path class="twinkle-star" d="M46 38 L47.5 42 L51.5 43.5 L47.5 45 L46 49 L44.5 45 L40.5 43.5 L44.5 42 Z" fill="#fca5ba"/>
+              <circle cx="158" cy="120" r="2" fill="#fca5ba" opacity="0.8"/>
+            </svg>
+          </div>
+          <h2 class="project-name">Proyecto 2 - Aves de Chile</h2>
+          <p class="project-desc"></p>
+        </div>
+        <a href="https://bigkokoz.github.io/Aves-de-Chile/" target="_blank" rel="noopener noreferrer" class="btn">Ver en GitHub ↗</a>
+      </div>
+    </article>
+
+    <!-- Nuevo Proyecto: Entrega 1 - Controlador físico -->
+    <article class="mac-window">
+      <div class="mac-titlebar">
+        <div class="mac-buttons">
+          <span class="mac-dot close"></span>
+          <span class="mac-dot minimize"></span>
+          <span class="mac-dot maximize"></span>
+        </div>
+        <span class="mac-title-text">controlador.fisico</span>
+      </div>
+      <div class="mac-content">
+        <div>
+          <div class="illustration-wrapper">
+            <svg class="planet-svg" viewBox="0 0 200 160">
+              <defs>
+                <linearGradient id="planetGrad5" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#ffd1dc"/>
+                  <stop offset="100%" stop-color="#e27092"/>
+                </linearGradient>
+              </defs>
+              <circle cx="100" cy="80" r="54" fill="#ffeaf0" opacity="0.6"/>
+              <g class="planet-group">
+                <circle cx="100" cy="80" r="37" fill="url(#planetGrad5)"/>
+                <path d="M 68 70 Q 100 90 132 70" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
+              </g>
+              <path class="twinkle-star" d="M145 40 L147 44 L151 45.5 L147 47 L145 51 L143 47 L139 45.5 L143 44 Z" fill="#fca5ba"/>
+            </svg>
+          </div>
+          <h2 class="project-name">Entrega 1</h2>
+          <p class="project-desc">Controlador físico interactivo.</p>
+        </div>
+        <a href="https://zainaahui.github.io/Entrega1-Controlador-fisico/" target="_blank" rel="noopener noreferrer" class="btn">Ver Proyecto ↗</a>
+      </div>
+    </article>
+
+    <!-- Nuevo Proyecto: Entrega 2 - Faro de alertas en código morse -->
+    <article class="mac-window">
+      <div class="mac-titlebar">
+        <div class="mac-buttons">
+          <span class="mac-dot close"></span>
+          <span class="mac-dot minimize"></span>
+          <span class="mac-dot maximize"></span>
+        </div>
+        <span class="mac-title-text">faro-morse.app</span>
+      </div>
+      <div class="mac-content">
+        <div>
+          <div class="illustration-wrapper">
+            <svg class="planet-svg" viewBox="0 0 200 160">
+              <defs>
+                <linearGradient id="planetGrad6" x1="100%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#ffb6c1"/>
+                  <stop offset="100%" stop-color="#c94b73"/>
+                </linearGradient>
+              </defs>
+              <circle cx="100" cy="80" r="54" fill="#ffeaf0" opacity="0.6"/>
+              <g class="planet-group">
+                <circle cx="100" cy="80" r="37" fill="url(#planetGrad6)"/>
+                <circle cx="85" cy="72" r="4" fill="#ffffff" opacity="0.3"/>
+                <circle cx="115" cy="88" r="5" fill="#ffffff" opacity="0.3"/>
+              </g>
+              <path class="twinkle-star" d="M50 45 L51.5 49 L55.5 50.5 L51.5 52 L50 56 L48.5 52 L44.5 50.5 L48.5 49 Z" fill="#fca5ba"/>
+            </svg>
+          </div>
+          <h2 class="project-name">Entrega 2</h2>
+          <p class="project-desc">Faro de alertas en código morse.</p>
+        </div>
+        <a href="https://zainaahui.github.io/Entrega2-Faro-de-alertas-en-codigo-morse/" target="_blank" rel="noopener noreferrer" class="btn">Ver Proyecto ↗</a>
+      </div>
+    </article>
+
+    <!-- Sintetizador Max -->
+    <article class="mac-window">
+      <div class="mac-titlebar">
+        <div class="mac-buttons">
+          <span class="mac-dot close"></span>
+          <span class="mac-dot minimize"></span>
+          <span class="mac-dot maximize"></span>
+        </div>
+        <span class="mac-title-text">sintetizador.max</span>
+      </div>
+      <div class="mac-content">
+        <div>
+          <div class="illustration-wrapper">
+            <svg class="planet-svg" viewBox="0 0 200 160">
+              <defs>
+                <linearGradient id="planetGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#ffcad6"/>
+                  <stop offset="100%" stop-color="#de6085"/>
+                </linearGradient>
+                <clipPath id="planetClip">
+                  <circle cx="100" cy="80" r="38"/>
+                </clipPath>
+              </defs>
+              <circle cx="100" cy="80" r="54" fill="#ffeaf0" opacity="0.6"/>
+              <g class="planet-group">
+                <circle cx="100" cy="80" r="38" fill="url(#planetGrad3)"/>
+                <g clip-path="url(#planetClip)">
+                  <path d="M 50 65 Q 90 78 150 60 Q 110 52 50 65 Z" fill="#ffffff" opacity="0.3"/>
+                  <path d="M 50 82 Q 100 95 150 78 Q 110 70 50 82 Z" fill="#ffffff" opacity="0.25"/>
+                  <path d="M 50 100 Q 95 110 150 95 Q 110 88 50 100 Z" fill="#ffffff" opacity="0.2"/>
+                </g>
+                <circle cx="100" cy="80" r="38" fill="none" stroke="#f6b8ca" stroke-width="1.5"/>
+                <path d="M 72 63 A 38 38 0 0 1 125 50" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
+              </g>
+              <path class="twinkle-star" d="M156 36 L158 40 L162 41.5 L158 43 L156 47 L154 43 L150 41.5 L154 40 Z" fill="#fca5ba"/>
+              <circle cx="42" cy="65" r="2" fill="#fca5ba" opacity="0.8"/>
+              <circle cx="58" cy="120" r="1.5" fill="#fca5ba" opacity="0.6"/>
+            </svg>
+          </div>
+          <h2 class="project-name">Sintetizador Max</h2>
+          <p class="project-desc">Creación e interacción con texturas de audio digital.</p>
+        </div>
+        <a href="https://youtu.be/alnXyv4vIaE" target="_blank" rel="noopener noreferrer" class="btn">Ver en GitHub ↗</a>
+      </div>
+    </article>
+
+    <!-- Sonificación -->
+    <article class="mac-window">
+      <div class="mac-titlebar">
+        <div class="mac-buttons">
+          <span class="mac-dot close"></span>
+          <span class="mac-dot minimize"></span>
+          <span class="mac-dot maximize"></span>
+        </div>
+        <span class="mac-title-text">sonificacion.audio</span>
+      </div>
+      <div class="mac-content">
+        <div>
+          <div class="illustration-wrapper">
+            <svg class="planet-svg" viewBox="0 0 200 160">
+              <defs>
+                <linearGradient id="planetGrad4" x1="0%" y1="100%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#f883a0"/>
+                  <stop offset="60%" stop-color="#ffb0c2"/>
+                  <stop offset="100%" stop-color="#ffe6ed"/>
+                </linearGradient>
+              </defs>
+              <circle cx="100" cy="80" r="54" fill="#ffeaf0" opacity="0.6"/>
+              <g class="planet-group">
+                <ellipse cx="100" cy="80" rx="72" ry="20" fill="none" stroke="#f6b1c3" stroke-width="1.8" transform="rotate(-30 100 80)" opacity="0.7"/>
+                <ellipse cx="100" cy="80" rx="58" ry="14" fill="none" stroke="#ea7697" stroke-width="3" transform="rotate(-30 100 80)" stroke-dasharray="180" stroke-dashoffset="90"/>
+                <circle cx="100" cy="80" r="36" fill="url(#planetGrad4)"/>
+                <path d="M 76 60 A 36 36 0 0 1 126 55" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+                <ellipse cx="88" cy="82" rx="9" ry="5" fill="#ffffff" opacity="0.25"/>
+                <ellipse cx="100" cy="80" rx="58" ry="14" fill="none" stroke="#ea7697" stroke-width="3" transform="rotate(-30 100 80)" stroke-dasharray="180" stroke-dashoffset="0"/>
+              </g>
+              <path class="twinkle-star" d="M148 118 L149.5 122 L153.5 123.5 L149.5 125 L148 129 L146.5 125 L142.5 123.5 L146.5 122 Z" fill="#fca5ba"/>
+              <circle cx="52" cy="45" r="2.5" fill="#fca5ba" opacity="0.85"/>
+            </svg>
+          </div>
+          <h2 class="project-name">Sonificación</h2>
+          <p class="project-desc">Canción con bases de datos y Sinfonía Visual.</p>
+        </div>
+        <button type="button" class="btn" onclick="openModal('sonificacionModal')">Explorar Proyecto ↗</button>
+      </div>
+    </article>
+
+    <!-- Proyecto: NUI -->
+    <article class="mac-window">
+      <div class="mac-titlebar">
+        <div class="mac-buttons">
+          <span class="mac-dot close"></span>
+          <span class="mac-dot minimize"></span>
+          <span class="mac-dot maximize"></span>
+        </div>
+        <span class="mac-title-text">nui-mediapipe.app</span>
+      </div>
+      <div class="mac-content">
+        <div>
+          <div class="illustration-wrapper">
+            <svg class="planet-svg" viewBox="0 0 200 160">
+              <defs>
+                <linearGradient id="planetGrad7" x1="15%" y1="10%" x2="85%" y2="95%">
+                  <stop offset="0%" stop-color="#ffe5ec"/>
+                  <stop offset="55%" stop-color="#f79cb6"/>
+                  <stop offset="100%" stop-color="#d4587e"/>
+                </linearGradient>
+              </defs>
+              <circle cx="100" cy="80" r="54" fill="#ffeaf0" opacity="0.6"/>
+              <ellipse cx="100" cy="80" rx="65" ry="18" fill="none" stroke="#f5b3c6" stroke-width="2" stroke-dasharray="5 4" transform="rotate(-14 100 80)"/>
+              <g class="planet-group">
+                <circle cx="100" cy="80" r="37" fill="url(#planetGrad7)"/>
+                <path d="M 74 64 A 37 37 0 0 1 123 53" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" opacity="0.55"/>
+                <circle cx="90" cy="90" r="4.5" fill="#ffffff" opacity="0.25"/>
+                <circle cx="114" cy="70" r="6" fill="#ffffff" opacity="0.22"/>
+              </g>
+              <path class="twinkle-star" d="M154 44 L155.8 48.2 L160 50 L155.8 51.8 L154 56 L152.2 51.8 L148 50 L152.2 48.2 Z" fill="#fca5ba"/>
+              <circle cx="46" cy="112" r="2.2" fill="#fca5ba" opacity="0.8"/>
+            </svg>
+          </div>
+          <h2 class="project-name">Proyecto: NUI</h2>
+          <p class="project-desc">Interacción natural en tiempo real con MediaPipe.</p>
+        </div>
+        <a href="https://zainaahui.github.io/NUI-mediapipe-/" target="_blank" rel="noopener noreferrer" class="btn">Ver Proyecto ↗</a>
+      </div>
+    </article>
+
+    <!-- Proyecto: RA -->
+    <article class="mac-window">
+      <div class="mac-titlebar">
+        <div class="mac-buttons">
+          <span class="mac-dot close"></span>
+          <span class="mac-dot minimize"></span>
+          <span class="mac-dot maximize"></span>
+        </div>
+        <span class="mac-title-text">realidad-aumentada.ar</span>
+      </div>
+      <div class="mac-content">
+        <div>
+          <div class="illustration-wrapper">
+            <svg class="planet-svg" viewBox="0 0 200 160">
+              <defs>
+                <linearGradient id="planetGrad8" x1="10%" y1="0%" x2="90%" y2="100%">
+                  <stop offset="0%" stop-color="#ffdce6"/>
+                  <stop offset="55%" stop-color="#f58fa9"/>
+                  <stop offset="100%" stop-color="#ce4d76"/>
+                </linearGradient>
+              </defs>
+              <circle cx="100" cy="80" r="54" fill="#ffeaf0" opacity="0.6"/>
+              <ellipse cx="100" cy="80" rx="66" ry="20" fill="none" stroke="#f4b2c4" stroke-width="2" transform="rotate(16 100 80)" opacity="0.85"/>
+              <g class="planet-group">
+                <circle cx="100" cy="80" r="36" fill="url(#planetGrad8)"/>
+                <path d="M 75 63 A 36 36 0 0 1 124 54" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" opacity="0.6"/>
+                <circle cx="112" cy="88" r="5" fill="#ffffff" opacity="0.25"/>
+              </g>
+              <path class="twinkle-star" d="M48 42 L49.6 46 L53.6 47.6 L49.6 49.2 L48 53.2 L46.4 49.2 L42.4 47.6 L46.4 46 Z" fill="#fca5ba"/>
+              <circle cx="155" cy="114" r="2" fill="#fca5ba" opacity="0.8"/>
+            </svg>
+          </div>
+          <h2 class="project-name">Proyecto: RA</h2>
+          <p class="project-desc">realidad aumentada con marcador</p>
+        </div>
+        <button type="button" class="btn" onclick="openModal('raModal')">Explorar Proyecto ↗</button>
+      </div>
+    </article>
+
+    <!-- Proyecto: RV -->
+    <article class="mac-window">
+      <div class="mac-titlebar">
+        <div class="mac-buttons">
+          <span class="mac-dot close"></span>
+          <span class="mac-dot minimize"></span>
+          <span class="mac-dot maximize"></span>
+        </div>
+        <span class="mac-title-text">realidad-virtual-360.vr</span>
+      </div>
+      <div class="mac-content">
+        <div>
+          <div class="illustration-wrapper">
+            <svg class="planet-svg" viewBox="0 0 200 160">
+              <defs>
+                <linearGradient id="planetGrad9" x1="15%" y1="5%" x2="85%" y2="95%">
+                  <stop offset="0%" stop-color="#ffe3ec"/>
+                  <stop offset="55%" stop-color="#f79bb5"/>
+                  <stop offset="100%" stop-color="#d1547c"/>
+                </linearGradient>
+              </defs>
+              <circle cx="100" cy="80" r="54" fill="#ffeaf0" opacity="0.6"/>
+              <ellipse cx="100" cy="80" rx="68" ry="21" fill="none" stroke="#f5b3c6" stroke-width="2" stroke-dasharray="6 4" transform="rotate(-22 100 80)"/>
+              <g class="planet-group">
+                <circle cx="100" cy="80" r="36" fill="url(#planetGrad9)"/>
+                <path d="M 74 64 A 36 36 0 0 1 124 54" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" opacity="0.6"/>
+                <circle cx="88" cy="88" r="5" fill="#ffffff" opacity="0.25"/>
+              </g>
+              <path class="twinkle-star" d="M153 41 L154.8 45.2 L159 47 L154.8 48.8 L153 53 L151.2 48.8 L147 47 L151.2 45.2 Z" fill="#fca5ba"/>
+              <circle cx="46" cy="113" r="2.2" fill="#fca5ba" opacity="0.8"/>
+            </svg>
+          </div>
+          <h2 class="project-name">Proyecto: RV</h2>
+          <p class="project-desc">Realidad Virtual 360 con A.frame</p>
+        </div>
+        <a href="https://zainaahui.github.io/realidad-virtual-360/" target="_blank" rel="noopener noreferrer" class="btn">Ver Proyecto ↗</a>
+      </div>
+    </article>
+  </main>
+
+  <!-- Modal Sonificación -->
+  <div class="modal-overlay" id="sonificacionModal" onclick="closeModal(event, 'sonificacionModal')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <button type="button" class="close-modal" onclick="closeModalDirect('sonificacionModal')" aria-label="Cerrar">&times;</button>
+      <h3 class="modal-title">Sonificación</h3>
+      <p class="modal-subtitle">Selecciona la opción que deseas abrir:</p>
+      <div class="modal-options">
+        <a href="https://zainaahui.github.io/sonificacion-de-imagen/" target="_blank" rel="noopener noreferrer" class="btn modal-btn">1. Sinfonía Visual ↗</a>
+        <audio controls class="audio-player">
+          <source src="alcoholicos.mp3" type="audio/mpeg">
+          <source src="sonificacion_imagen/alcoholicos.mp3" type="audio/mpeg">
+          Tu navegador no soporta el reproductor de audio.
+        </audio>
+      </div>
     </div>
   </div>
 
-  <!-- Encabezado y descripción NUI + MediaPipe -->
-  <header class="w-full max-w-6xl space-y-6 mb-6">
-    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-      <div class="flex items-center space-x-3">
-        <div id="header-logo" class="w-12 h-12 bg-gradient-to-tr from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg text-white text-2xl transition-all duration-500">
-          <i class="fa-solid fa-wand-magic-sparkles"></i>
+  <!-- Modal Proyecto: RA (Descarga del marcador primero) -->
+  <div class="modal-overlay" id="raModal" onclick="closeModal(event, 'raModal')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <button type="button" class="close-modal" onclick="closeModalDirect('raModal')" aria-label="Cerrar">&times;</button>
+      <h3 class="modal-title">Proyecto: RA</h3>
+      <p class="modal-subtitle">Descarga primero el marcador para apuntar con tu cámara y luego abre el proyecto:</p>
+      <div class="modal-options">
+        <div class="marker-preview-box">
+          <img id="raMarkerPreview" alt="Marcador de Realidad Aumentada" class="marker-preview-img" />
         </div>
-        <div>
-          <h1 id="header-title" class="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-sky-300 via-purple-300 to-rose-300 bg-clip-text text-transparent">
-            NUI &amp; MediaPipe · Visión Interactiva
-          </h1>
-          <p class="text-xs md:text-sm text-slate-400">
-            Interfaz Natural de Usuario (NUI) en tiempo real con MediaPipe Face Mesh y Pose
-          </p>
-        </div>
-      </div>
-
-      <div class="flex flex-wrap items-center gap-3">
-        <div id="status-badge" class="px-4 py-2 rounded-full text-xs font-medium bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-          Cargando modelos MediaPipe...
-        </div>
-        <button id="toggle-btn" type="button" class="px-5 py-2.5 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-indigo-500 to-purple-600 hover:opacity-90 transition shadow-lg active:scale-95 disabled:opacity-50" disabled>
-          Iniciar Cámara
-        </button>
+        <a id="downloadMarkerBtn" download="marcador.png" class="btn btn-secondary modal-btn">⬇ Descargar marcador.png</a>
+        <a href="https://zainaahui.github.io/ratita-realidad-aumentada-con-marcador/" target="_blank" rel="noopener noreferrer" class="btn modal-btn">Ir al Proyecto RA ↗</a>
       </div>
     </div>
+  </div>
 
-    <!-- Descripción breve de NUI y MediaPipe -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div class="glass-panel p-4 rounded-2xl text-xs md:text-sm text-slate-300">
-        <span class="font-bold text-sky-300 block mb-1">¿Qué es NUI?</span>
-        Una <strong>Natural User Interface (NUI)</strong> permite interactuar con sistemas digitales mediante gestos, posturas o expresiones humanas naturales, sin depender de teclado o ratón.
-      </div>
-      <div class="glass-panel p-4 rounded-2xl text-xs md:text-sm text-slate-300">
-        <span class="font-bold text-purple-300 block mb-1">¿Qué es MediaPipe?</span>
-        Es el framework de visión por computadora de Google que detecta puntos clave (<em>landmarks</em>) del rostro, cuerpo y manos en tiempo real directamente en el navegador.
-      </div>
-    </div>
-
-    <!-- Selector de 3 opciones: Manos, Cara y Cuerpo -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-      <a href="jellybaby.html" class="glass-panel hover:bg-slate-800/90 p-4 rounded-2xl flex items-center justify-between transition border border-emerald-500/30">
-        <div>
-          <div class="text-xs text-emerald-300 font-semibold">Opción 1 · jellybaby.html</div>
-          <div class="text-base font-bold text-white">🖐️ Manos (Jellybaby 3D)</div>
-        </div>
-        <i class="fa-solid fa-arrow-up-right-from-square text-emerald-300"></i>
-      </a>
-
-      <button id="tab-cara" type="button" onclick="switchTracker('CARA')" class="glass-panel p-4 rounded-2xl flex items-center justify-between transition border-2 border-amber-400 bg-slate-800/90 text-left">
-        <div>
-          <div class="text-xs text-amber-300 font-semibold">Opción 2 · Face Mesh</div>
-          <div class="text-base font-bold text-white">😇 Cara (Ángel / Demonio)</div>
-        </div>
-        <i class="fa-solid fa-face-smile text-amber-300 text-lg"></i>
-      </button>
-
-      <button id="tab-cuerpo" type="button" onclick="switchTracker('CUERPO')" class="glass-panel hover:bg-slate-800/90 p-4 rounded-2xl flex items-center justify-between transition border border-rose-500/30 text-left">
-        <div>
-          <div class="text-xs text-rose-300 font-semibold">Opción 3 · Pose</div>
-          <div class="text-base font-bold text-white">💖 Cuerpo (Corazones / Estrellas)</div>
-        </div>
-        <i class="fa-solid fa-person-running text-rose-400 text-lg"></i>
-      </button>
-    </div>
-  </header>
-
-  <!-- Contenido principal -->
-  <main class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-3 gap-6 flex-grow items-center">
-    <!-- Cámara y Canvas -->
-    <div id="camera-container" class="lg:col-span-2 relative w-full aspect-[4/3] bg-slate-950 rounded-3xl overflow-hidden shadow-2xl border-4 border-slate-700/60 transition-all duration-500">
-      <video id="webcam" class="absolute inset-0 w-full h-full object-cover" playsinline></video>
-      <canvas id="output_canvas" class="absolute inset-0 w-full h-full object-cover pointer-events-none overlay"></canvas>
-      <div id="camera-ambient-glow" class="absolute inset-0 pointer-events-none transition-all duration-500 opacity-0"></div>
-
-      <div id="video-placeholder" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/90 text-white p-6 text-center z-10 backdrop-blur-md">
-        <div class="w-20 h-20 bg-indigo-500/20 rounded-full flex items-center justify-center mb-4 text-4xl border border-indigo-500/30 animate-bounce text-indigo-400">
-          <i class="fa-solid fa-camera"></i>
-        </div>
-        <h3 class="text-lg font-semibold mb-1">Cámara Inactiva</h3>
-        <p class="text-sm text-slate-400 max-w-xs">Haz clic en "Iniciar Cámara" para activar la detección en vivo.</p>
-      </div>
-    </div>
-
-    <!-- Panel lateral dinámico (Cara o Cuerpo) -->
-    <div class="glass-panel text-slate-100 p-6 rounded-3xl shadow-xl flex flex-col justify-between h-full space-y-6">
-      <!-- Panel Modo Cara -->
-      <div id="panel-cara" class="space-y-5">
-        <div>
-          <h2 class="text-lg font-bold flex items-center gap-2">
-            <i class="fa-solid fa-eye text-amber-400"></i> Estado Facial (EAR)
-          </h2>
-          <p class="text-xs text-slate-400">Guiña un ojo para cambiar de modo</p>
-        </div>
-
-        <div id="mode-card" class="p-5 rounded-2xl bg-slate-900/90 border border-slate-700 text-center transition-all duration-300">
-          <div id="mode-icon" class="text-4xl mb-2">⚖️</div>
-          <div class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1">Modo Activo</div>
-          <div id="mode-title" class="text-lg font-extrabold text-white">Neutral</div>
-          <div id="mode-desc" class="text-xs text-slate-400 mt-1">Guiña un ojo para cambiar de bando</div>
-        </div>
-
-        <div class="space-y-3">
-          <div>
-            <div class="flex justify-between text-xs font-medium mb-1 text-slate-300">
-              <span>Ojo Izq (Ángel 😇)</span>
-              <span id="left-ear-val">--</span>
-            </div>
-            <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
-              <div id="left-bar" class="bg-gradient-to-r from-amber-400 to-yellow-500 h-full rounded-full transition-all duration-100" style="width: 0%"></div>
-            </div>
-          </div>
-
-          <div>
-            <div class="flex justify-between text-xs font-medium mb-1 text-slate-300">
-              <span>Ojo Der (Demonio 😈)</span>
-              <span id="right-ear-val">--</span>
-            </div>
-            <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
-              <div id="right-bar" class="bg-gradient-to-r from-rose-500 to-red-600 h-full rounded-full transition-all duration-100" style="width: 0%"></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 text-xs text-slate-300 space-y-1.5">
-          <p>• <b>Ojo Izquierdo:</b> Halo dorado y alas de Ángel.</p>
-          <p>• <b>Ojo Derecho:</b> Cuernos y fuego de Demonio.</p>
-        </div>
-      </div>
-
-      <!-- Panel Modo Cuerpo -->
-      <div id="panel-cuerpo" class="space-y-5 hidden">
-        <div class="flex items-center justify-between">
-          <h2 class="text-lg font-bold flex items-center gap-2">
-            <i class="fa-solid fa-child-reaching text-rose-400"></i> Estado Corporal
-          </h2>
-          <span id="pose-status-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40">
-            En espera
-          </span>
-        </div>
-
-        <div id="gesture-card" class="p-5 rounded-2xl bg-gradient-to-br from-slate-900 to-rose-950 border border-rose-500/40 text-center transition-all duration-300 heart-glow">
-          <div id="gesture-icon" class="text-4xl mb-2">💖</div>
-          <div id="gesture-name" class="text-xl font-black text-white mb-1">En Espera</div>
-          <div id="gesture-desc" class="text-xs text-slate-300">Haz un corazón con tus brazos o levanta una pierna</div>
-        </div>
-
-        <div class="space-y-2 text-xs">
-          <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/70 border border-slate-800">
-            <span><i class="fa-solid fa-heart text-rose-400 mr-1"></i> Corazón con Brazos</span>
-            <span class="text-rose-300">Lluvia de Corazones</span>
-          </div>
-          <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/70 border border-slate-800">
-            <span><i class="fa-solid fa-arrow-left text-amber-400 mr-1"></i> Pierna Izquierda</span>
-            <span class="text-amber-300">Estrellas Doradas</span>
-          </div>
-          <div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-900/70 border border-slate-800">
-            <span><i class="fa-solid fa-arrow-right text-cyan-400 mr-1"></i> Pierna Derecha</span>
-            <span class="text-cyan-300">Estrellas Azules</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </main>
-
-  <footer class="w-full max-w-6xl text-center py-4 text-xs text-slate-500 mt-4">
-    MediaPipe Face Mesh &amp; Pose · HTML5 Canvas · Tailwind CSS
+  <footer>
+    <p>Diseñado en tonos pastel • Galaxia digital de proyectos</p>
   </footer>
 
   <script>
-    const videoElement = document.getElementById('webcam');
-    const canvasElement = document.getElementById('output_canvas');
-    const canvasCtx = canvasElement.getContext('2d');
-    const toggleBtn = document.getElementById('toggle-btn');
-    const statusBadge = document.getElementById('status-badge');
-    const videoPlaceholder = document.getElementById('video-placeholder');
-    const cameraContainer = document.getElementById('camera-container');
-    const cameraAmbientGlow = document.getElementById('camera-ambient-glow');
-    const bodyTheme = document.getElementById('body-theme');
-
-    const panelCara = document.getElementById('panel-cara');
-    const panelCuerpo = document.getElementById('panel-cuerpo');
-    const tabCara = document.getElementById('tab-cara');
-    const tabCuerpo = document.getElementById('tab-cuerpo');
-
-    const leftEarVal = document.getElementById('left-ear-val');
-    const rightEarVal = document.getElementById('right-ear-val');
-    const leftBar = document.getElementById('left-bar');
-    const rightBar = document.getElementById('right-bar');
-    const modeCard = document.getElementById('mode-card');
-    const modeIcon = document.getElementById('mode-icon');
-    const modeTitle = document.getElementById('mode-title');
-    const modeDesc = document.getElementById('mode-desc');
-
-    const gestureCard = document.getElementById('gesture-card');
-    const gestureIcon = document.getElementById('gesture-icon');
-    const gestureName = document.getElementById('gesture-name');
-    const gestureDesc = document.getElementById('gesture-desc');
-    const poseStatusBadge = document.getElementById('pose-status-badge');
-
-    function showModal(title, message, icon = '⚠️') {
-      document.getElementById('modal-title').textContent = title;
-      document.getElementById('modal-message').textContent = message;
-      document.getElementById('modal-icon').textContent = icon;
-      const overlay = document.getElementById('modal-overlay');
-      const content = document.getElementById('modal-content');
-      overlay.classList.remove('opacity-0', 'pointer-events-none');
-      content.classList.remove('scale-95');
-      content.classList.add('scale-100');
+    // --- LÓGICA DE MODALES ---
+    function openModal(modalId) {
+      const targetModal = document.getElementById(modalId);
+      if (targetModal) targetModal.classList.add('active');
     }
 
-    function closeModal() {
-      const overlay = document.getElementById('modal-overlay');
-      const content = document.getElementById('modal-content');
-      overlay.classList.add('opacity-0', 'pointer-events-none');
-      content.classList.remove('scale-100');
-      content.classList.add('scale-95');
-    }
-
-    let activeTracker = 'CARA'; // 'CARA' o 'CUERPO'
-    let mpCamera = null;
-    let faceMesh = null;
-    let pose = null;
-    let isRunning = false;
-    let currentMode = 'NEUTRAL';
-    let particles = [];
-    let animationTimer = 0;
-    let winkCooldown = 0;
-    const WINK_THRESHOLD = 0.20;
-
-    function switchTracker(mode) {
-      activeTracker = mode;
-      particles = [];
-      canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-
-      if (mode === 'CARA') {
-        panelCara.classList.remove('hidden');
-        panelCuerpo.classList.add('hidden');
-        tabCara.className = 'glass-panel p-4 rounded-2xl flex items-center justify-between transition border-2 border-amber-400 bg-slate-800/90 text-left';
-        tabCuerpo.className = 'glass-panel hover:bg-slate-800/90 p-4 rounded-2xl flex items-center justify-between transition border border-rose-500/30 text-left';
-      } else {
-        panelCuerpo.classList.remove('hidden');
-        panelCara.classList.add('hidden');
-        tabCuerpo.className = 'glass-panel p-4 rounded-2xl flex items-center justify-between transition border-2 border-rose-400 bg-slate-800/90 text-left';
-        tabCara.className = 'glass-panel hover:bg-slate-800/90 p-4 rounded-2xl flex items-center justify-between transition border border-amber-500/30 text-left';
-        setFaceMode('NEUTRAL');
-      }
-    }
-
-    const LEFT_EYE = { top: 159, bottom: 145, c1: 33, c2: 133 };
-    const RIGHT_EYE = { top: 386, bottom: 374, c1: 362, c2: 263 };
-
-    function dist(p1, p2) {
-      return Math.hypot(p1.x - p2.x, p1.y - p2.y);
-    }
-
-    function calcEAR(landmarks, eye) {
-      const h = dist(landmarks[eye.c1], landmarks[eye.c2]);
-      if (h === 0) return 0;
-      return dist(landmarks[eye.top], landmarks[eye.bottom]) / h;
-    }
-
-    class Particle {
-      constructor(x, y, kind, color = null) {
-        this.x = x;
-        this.y = y;
-        this.kind = kind; // 'angel', 'devil', 'star', 'heart'
-        this.color = color;
-        const angle = Math.random() * Math.PI * 2;
-        const speed = 1 + Math.random() * 5;
-        this.vx = Math.cos(angle) * speed;
-        this.vy = Math.sin(angle) * speed - 1.5;
-        this.size = 7 + Math.random() * 11;
-        this.alpha = 1;
-        this.decay = 0.014 + Math.random() * 0.018;
-        this.rotation = Math.random() * Math.PI;
-        this.rotSpeed = (Math.random() - 0.5) * 0.15;
-      }
-
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        if (this.kind === 'angel' || this.kind === 'heart') this.vy -= 0.06;
-        else this.vy += 0.1;
-        this.alpha -= this.decay;
-        this.rotation += this.rotSpeed;
-      }
-
-      draw(ctx) {
-        ctx.save();
-        ctx.translate(this.x, this.y);
-        ctx.rotate(this.rotation);
-        ctx.globalAlpha = Math.max(0, this.alpha);
-
-        if (this.kind === 'angel') {
-          ctx.fillStyle = '#fef08a';
-          ctx.shadowColor = '#facc15';
-          ctx.shadowBlur = 10;
-          ctx.beginPath();
-          ctx.ellipse(0, 0, this.size, this.size / 2, 0, 0, Math.PI * 2);
-          ctx.fill();
-        } else if (this.kind === 'devil') {
-          ctx.fillStyle = Math.random() > 0.5 ? '#ef4444' : '#f97316';
-          ctx.shadowColor = '#dc2626';
-          ctx.shadowBlur = 12;
-          ctx.beginPath();
-          ctx.arc(0, 0, this.size * 0.8, 0, Math.PI * 2);
-          ctx.fill();
-        } else if (this.kind === 'star') {
-          ctx.fillStyle = this.color || '#eab308';
-          ctx.shadowColor = this.color || '#eab308';
-          ctx.shadowBlur = 14;
-          ctx.beginPath();
-          for (let i = 0; i < 5; i++) {
-            ctx.lineTo(Math.cos((18 + i * 72) * Math.PI / 180) * this.size, -Math.sin((18 + i * 72) * Math.PI / 180) * this.size);
-            ctx.lineTo(Math.cos((54 + i * 72) * Math.PI / 180) * (this.size / 2), -Math.sin((54 + i * 72) * Math.PI / 180) * (this.size / 2));
-          }
-          ctx.closePath();
-          ctx.fill();
-        } else {
-          const s = this.size * 1.2;
-          ctx.fillStyle = this.color || '#f43f5e';
-          ctx.shadowColor = this.color || '#f43f5e';
-          ctx.shadowBlur = 18;
-          ctx.beginPath();
-          ctx.moveTo(0, s * 0.3);
-          ctx.bezierCurveTo(0, 0, -s / 2, 0, -s / 2, s * 0.3);
-          ctx.bezierCurveTo(-s / 2, s * 0.7, 0, s, 0, s * 1.2);
-          ctx.bezierCurveTo(0, s, s / 2, s * 0.7, s / 2, s * 0.3);
-          ctx.bezierCurveTo(s / 2, 0, 0, 0, 0, s * 0.3);
-          ctx.closePath();
-          ctx.fill();
-        }
-        ctx.restore();
-      }
-    }
-
-    function setFaceMode(newMode) {
-      if (currentMode === newMode) return;
-      currentMode = newMode;
-
-      if (newMode === 'ANGEL') {
-        modeIcon.textContent = '😇';
-        modeTitle.textContent = 'Modo Ángel';
-        modeDesc.textContent = '¡Halo dorado y alas celestiales activas!';
-        modeCard.className = 'p-5 rounded-2xl bg-amber-950/70 border border-amber-400 text-center transition-all duration-300 halo-effect';
-        bodyTheme.className = 'bg-gradient-to-br from-slate-900 via-amber-950 to-slate-900 min-h-screen text-slate-100 flex flex-col items-center justify-between p-4 md:p-8 transition-colors duration-700';
-        cameraContainer.className = 'lg:col-span-2 relative w-full aspect-[4/3] bg-slate-950 rounded-3xl overflow-hidden shadow-2xl border-4 border-amber-400/85 halo-effect transition-all duration-500';
-        cameraAmbientGlow.className = 'absolute inset-0 pointer-events-none transition-all duration-500 opacity-30 bg-gradient-to-t from-amber-500/20 to-yellow-300/10';
-      } else if (newMode === 'DEVIL') {
-        modeIcon.textContent = '😈';
-        modeTitle.textContent = 'Modo Demonio';
-        modeDesc.textContent = '¡Cuernos y fuego activos!';
-        modeCard.className = 'p-5 rounded-2xl bg-red-950/70 border border-rose-500 text-center transition-all duration-300 devil-effect';
-        bodyTheme.className = 'bg-gradient-to-br from-slate-950 via-red-950 to-slate-950 min-h-screen text-slate-100 flex flex-col items-center justify-between p-4 md:p-8 transition-colors duration-700';
-        cameraContainer.className = 'lg:col-span-2 relative w-full aspect-[4/3] bg-slate-950 rounded-3xl overflow-hidden shadow-2xl border-4 border-rose-500/85 devil-effect transition-all duration-500';
-        cameraAmbientGlow.className = 'absolute inset-0 pointer-events-none transition-all duration-500 opacity-40 bg-gradient-to-t from-red-600/30 to-orange-500/10';
-      } else {
-        modeIcon.textContent = '⚖️';
-        modeTitle.textContent = 'Neutral';
-        modeDesc.textContent = 'Guiña un ojo para cambiar de bando';
-        modeCard.className = 'p-5 rounded-2xl bg-slate-900/90 border border-slate-700 text-center transition-all duration-300';
-        bodyTheme.className = 'bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 min-h-screen text-slate-100 flex flex-col items-center justify-between p-4 md:p-8 transition-colors duration-700';
-        cameraContainer.className = 'lg:col-span-2 relative w-full aspect-[4/3] bg-slate-950 rounded-3xl overflow-hidden shadow-2xl border-4 border-slate-700/60 transition-all duration-500';
-        cameraAmbientGlow.className = 'absolute inset-0 pointer-events-none transition-all duration-500 opacity-0';
-      }
-    }
-
-    function drawAngelOverlay(ctx, fx, fy, ny, faceWidth) {
-      ctx.save();
-      const haloY = fy - 50 + Math.sin(animationTimer * 3) * 6;
-      ctx.beginPath();
-      ctx.ellipse(fx, haloY, faceWidth * 0.35, faceWidth * 0.12, 0, 0, Math.PI * 2);
-      ctx.strokeStyle = '#fde047';
-      ctx.lineWidth = 8;
-      ctx.shadowColor = '#facc15';
-      ctx.shadowBlur = 25;
-      ctx.stroke();
-
-      const wingSpread = faceWidth * 2.4;
-      const wingY = ny + 40;
-
-      ctx.save();
-      ctx.translate(fx - wingSpread * 0.4, wingY);
-      ctx.rotate(-0.15 + Math.sin(animationTimer * 2) * 0.05);
-      ctx.fillStyle = 'rgba(254, 240, 138, 0.9)';
-      ctx.shadowColor = '#facc15';
-      ctx.shadowBlur = 35;
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.bezierCurveTo(-wingSpread * 0.7, -100, -wingSpread * 0.95, 120, -30, 210);
-      ctx.bezierCurveTo(-50, 70, -30, -30, 0, 0);
-      ctx.closePath();
-      ctx.fill();
-      ctx.restore();
-
-      ctx.save();
-      ctx.translate(fx + wingSpread * 0.4, wingY);
-      ctx.rotate(0.15 - Math.sin(animationTimer * 2) * 0.05);
-      ctx.fillStyle = 'rgba(254, 240, 138, 0.9)';
-      ctx.shadowColor = '#facc15';
-      ctx.shadowBlur = 35;
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.bezierCurveTo(wingSpread * 0.7, -100, wingSpread * 0.95, 120, 30, 210);
-      ctx.bezierCurveTo(50, 70, 30, -30, 0, 0);
-      ctx.closePath();
-      ctx.fill();
-      ctx.restore();
-
-      ctx.restore();
-    }
-
-    function drawDevilOverlay(ctx, fx, fy, faceWidth) {
-      ctx.save();
-      const hornOffset = faceWidth * 0.28;
-      const hornBaseY = fy - 15;
-
-      const grad = ctx.createRadialGradient(fx, fy, 20, fx, fy, faceWidth * 0.9);
-      grad.addColorStop(0, 'rgba(239, 68, 68, 0.35)');
-      grad.addColorStop(1, 'rgba(185, 28, 28, 0)');
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, canvasElement.width, canvasElement.height);
-
-      ctx.save();
-      ctx.translate(fx - hornOffset, hornBaseY);
-      ctx.rotate(-0.35 + Math.sin(animationTimer * 4) * 0.03);
-      ctx.fillStyle = '#dc2626';
-      ctx.shadowColor = '#ef4444';
-      ctx.shadowBlur = 20;
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.quadraticCurveTo(-30, -50, -50, -80);
-      ctx.quadraticCurveTo(-20, -40, 10, -20);
-      ctx.closePath();
-      ctx.fill();
-      ctx.restore();
-
-      ctx.save();
-      ctx.translate(fx + hornOffset, hornBaseY);
-      ctx.rotate(0.35 - Math.sin(animationTimer * 4) * 0.03);
-      ctx.fillStyle = '#dc2626';
-      ctx.shadowColor = '#ef4444';
-      ctx.shadowBlur = 20;
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.quadraticCurveTo(30, -50, 50, -80);
-      ctx.quadraticCurveTo(20, -40, -10, -20);
-      ctx.closePath();
-      ctx.fill();
-      ctx.restore();
-
-      ctx.restore();
-    }
-
-    function onFaceResults(results) {
-      if (activeTracker !== 'CARA') return;
-      if (canvasElement.width !== videoElement.videoWidth || canvasElement.height !== videoElement.videoHeight) {
-        canvasElement.width = videoElement.videoWidth || 640;
-        canvasElement.height = videoElement.videoHeight || 480;
-      }
-
-      canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-      animationTimer += 0.05;
-
-      for (let i = particles.length - 1; i >= 0; i--) {
-        particles[i].update();
-        particles[i].draw(canvasCtx);
-        if (particles[i].alpha <= 0) particles.splice(i, 1);
-      }
-
-      if (!results.multiFaceLandmarks || results.multiFaceLandmarks.length === 0) {
-        leftEarVal.textContent = '--';
-        rightEarVal.textContent = '--';
-        leftBar.style.width = '0%';
-        rightBar.style.width = '0%';
-        setFaceMode('NEUTRAL');
-        return;
-      }
-
-      const lm = results.multiFaceLandmarks[0];
-      const leftEAR = calcEAR(lm, LEFT_EYE);
-      const rightEAR = calcEAR(lm, RIGHT_EYE);
-
-      leftEarVal.textContent = leftEAR.toFixed(2);
-      rightEarVal.textContent = rightEAR.toFixed(2);
-      leftBar.style.width = `${Math.min(100, Math.max(0, (leftEAR / 0.35) * 100))}%`;
-      rightBar.style.width = `${Math.min(100, Math.max(0, (rightEAR / 0.35) * 100))}%`;
-
-      if (winkCooldown > 0) winkCooldown--;
-      if (winkCooldown === 0) {
-        if (leftEAR < WINK_THRESHOLD && rightEAR >= WINK_THRESHOLD) {
-          winkCooldown = 20;
-          setFaceMode('ANGEL');
-        } else if (rightEAR < WINK_THRESHOLD && leftEAR >= WINK_THRESHOLD) {
-          winkCooldown = 20;
-          setFaceMode('DEVIL');
-        }
-      }
-
-      const fx = lm[10].x * canvasElement.width;
-      const fy = lm[10].y * canvasElement.height;
-      const ny = lm[1].y * canvasElement.height;
-      const faceWidth = Math.abs(lm[454].x - lm[234].x) * canvasElement.width;
-
-      if (currentMode === 'ANGEL') {
-        drawAngelOverlay(canvasCtx, fx, fy, ny, faceWidth);
-        for (let i = 0; i < 2; i++) {
-          particles.push(new Particle(fx + (Math.random() - 0.5) * 120, fy + (Math.random() - 0.5) * 120, 'angel'));
-        }
-      } else if (currentMode === 'DEVIL') {
-        drawDevilOverlay(canvasCtx, fx, fy, faceWidth);
-        for (let i = 0; i < 2; i++) {
-          particles.push(new Particle(fx + (Math.random() - 0.5) * 120, fy + (Math.random() - 0.5) * 120, 'devil'));
+    function closeModalDirect(modalId) {
+      const targetModal = document.getElementById(modalId);
+      if (targetModal) {
+        targetModal.classList.remove('active');
+        if (modalId === 'sonificacionModal') {
+          const audio = targetModal.querySelector('audio');
+          if (audio) audio.pause();
         }
       }
     }
 
-    function onPoseResults(results) {
-      if (activeTracker !== 'CUERPO') return;
-      if (canvasElement.width !== videoElement.videoWidth || canvasElement.height !== videoElement.videoHeight) {
-        canvasElement.width = videoElement.videoWidth || 640;
-        canvasElement.height = videoElement.videoHeight || 480;
+    function closeModal(event, modalId) {
+      const targetModal = document.getElementById(modalId);
+      if (targetModal && event.target === targetModal) {
+        closeModalDirect(modalId);
       }
-
-      canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-
-      for (let i = particles.length - 1; i >= 0; i--) {
-        particles[i].update();
-        particles[i].draw(canvasCtx);
-        if (particles[i].alpha <= 0) particles.splice(i, 1);
-      }
-
-      if (!results.poseLandmarks) {
-        poseStatusBadge.textContent = 'Buscando...';
-        return;
-      }
-
-      poseStatusBadge.textContent = 'Detectado';
-      const lm = results.poseLandmarks;
-
-      let isHeart = false;
-      if (lm[15] && lm[16] && lm[11] && lm[12]) {
-        const wristDist = Math.hypot(lm[15].x - lm[16].x, lm[15].y - lm[16].y);
-        const shoulderWidth = Math.hypot(lm[11].x - lm[12].x, lm[11].y - lm[12].y);
-        const avgWristY = (lm[15].y + lm[16].y) / 2;
-        const avgShoulderY = (lm[11].y + lm[12].y) / 2;
-        if (wristDist < shoulderWidth * 0.8 && avgWristY < avgShoulderY + 0.3) {
-          isHeart = true;
-        }
-      }
-
-      const leftLifted = lm[27] && lm[23] && (lm[27].y < lm[23].y + 0.1);
-      const rightLifted = lm[28] && lm[24] && (lm[28].y < lm[24].y + 0.1);
-
-      let title = 'Cuerpo en Reposo';
-      let icon = '💖';
-      let desc = 'Haz un corazón con tus brazos o levanta una pierna';
-
-      const heartColors = ['#f43f5e', '#ec4899', '#fb7185', '#fda4af'];
-      if (isHeart) {
-        title = '¡Corazón con Brazos!';
-        icon = '💘';
-        desc = '¡Explosión de corazones!';
-        for (let i = 0; i < 5; i++) {
-          const c = heartColors[Math.floor(Math.random() * heartColors.length)];
-          particles.push(new Particle(canvasElement.width / 2 + (Math.random() - 0.5) * 200, canvasElement.height / 2 + (Math.random() - 0.5) * 140, 'heart', c));
-        }
-      } else if (leftLifted && rightLifted) {
-        title = '¡Ambas Piernas!';
-        icon = '✨';
-        desc = '¡Galaxia de estrellas!';
-        particles.push(new Particle(lm[27].x * canvasElement.width, lm[27].y * canvasElement.height, 'star', '#eab308'));
-        particles.push(new Particle(lm[28].x * canvasElement.width, lm[28].y * canvasElement.height, 'star', '#06b6d4'));
-      } else if (leftLifted) {
-        title = 'Pierna Izquierda';
-        icon = '⭐';
-        desc = '¡Estrellas doradas!';
-        for (let i = 0; i < 4; i++) {
-          particles.push(new Particle(lm[27].x * canvasElement.width, lm[27].y * canvasElement.height, 'star', '#eab308'));
-        }
-      } else if (rightLifted) {
-        title = 'Pierna Derecha';
-        icon = '🌟';
-        desc = '¡Estrellas azules!';
-        for (let i = 0; i < 4; i++) {
-          particles.push(new Particle(lm[28].x * canvasElement.width, lm[28].y * canvasElement.height, 'star', '#3b82f6'));
-        }
-      }
-
-      gestureIcon.textContent = icon;
-      gestureName.textContent = title;
-      gestureDesc.textContent = desc;
-
-      canvasCtx.save();
-      canvasCtx.strokeStyle = 'rgba(244, 63, 94, 0.5)';
-      canvasCtx.lineWidth = 3;
-      const links = [[11, 12], [11, 13], [13, 15], [12, 14], [14, 16], [23, 24], [23, 25], [25, 27], [24, 26], [26, 28], [23, 11], [24, 12]];
-      links.forEach(([a, b]) => {
-        if (lm[a] && lm[b] && lm[a].visibility > 0.5 && lm[b].visibility > 0.5) {
-          canvasCtx.beginPath();
-          canvasCtx.moveTo(lm[a].x * canvasElement.width, lm[a].y * canvasElement.height);
-          canvasCtx.lineTo(lm[b].x * canvasElement.width, lm[b].y * canvasElement.height);
-          canvasCtx.stroke();
-        }
-      });
-      canvasCtx.restore();
     }
 
-    function initMediaPipe() {
-      faceMesh = new FaceMesh({
-        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
-      });
-      faceMesh.setOptions({
-        maxNumFaces: 1,
-        refineLandmarks: true,
-        minDetectionConfidence: 0.6,
-        minTrackingConfidence: 0.6
-      });
-      faceMesh.onResults(onFaceResults);
-
-      pose = new Pose({
-        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`
-      });
-      pose.setOptions({
-        modelComplexity: 1,
-        smoothLandmarks: true,
-        minDetectionConfidence: 0.6,
-        minTrackingConfidence: 0.6
-      });
-      pose.onResults(onPoseResults);
-
-      statusBadge.className = 'px-4 py-2 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-2';
-      statusBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400"></span> Modelos Listos';
-      toggleBtn.disabled = false;
-    }
-
-    toggleBtn.addEventListener('click', async () => {
-      if (!isRunning) {
-        try {
-          mpCamera = new Camera(videoElement, {
-            onFrame: async () => {
-              if (!isRunning) return;
-              if (activeTracker === 'CARA' && faceMesh) {
-                await faceMesh.send({ image: videoElement });
-              } else if (activeTracker === 'CUERPO' && pose) {
-                await pose.send({ image: videoElement });
-              }
-            },
-            width: 640,
-            height: 480
-          });
-          await mpCamera.start();
-          isRunning = true;
-          videoPlaceholder.classList.add('hidden');
-          toggleBtn.textContent = 'Detener Cámara';
-        } catch (err) {
-          console.error(err);
-          showModal('Error de Cámara', 'No se pudo acceder a la cámara web. Verifica los permisos del navegador y usa HTTPS o localhost.', '📷');
-        }
-      } else {
-        isRunning = false;
-        if (mpCamera) await mpCamera.stop();
-        videoPlaceholder.classList.remove('hidden');
-        canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-        toggleBtn.textContent = 'Iniciar Cámara';
-        setFaceMode('NEUTRAL');
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.active').forEach(modal => {
+          closeModalDirect(modal.id);
+        });
       }
     });
 
-    window.addEventListener('DOMContentLoaded', initMediaPipe);
+    // --- GENERAR MARCADOR DESCARGABLE (marcador.png) ---
+    (function buildMarkerDownload() {
+      const c = document.createElement('canvas');
+      c.width = 700;
+      c.height = 700;
+      const ctx = c.getContext('2d');
+
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, 700, 700);
+
+      ctx.fillStyle = '#050505';
+      ctx.fillRect(70, 70, 560, 560);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(210, 210, 280, 280);
+
+      ctx.fillStyle = '#55c5d8';
+      ctx.strokeStyle = '#111111';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(270, 280);
+      ctx.quadraticCurveTo(350, 200, 430, 280);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#f8d828';
+      ctx.beginPath();
+      ctx.ellipse(350, 224, 22, 11, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#f8d828';
+      ctx.beginPath();
+      ctx.moveTo(270, 280);
+      ctx.quadraticCurveTo(350, 304, 430, 280);
+      ctx.lineTo(430, 290);
+      ctx.quadraticCurveTo(350, 314, 270, 290);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#f4cfa6';
+      ctx.beginPath();
+      ctx.ellipse(355, 312, 74, 46, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.ellipse(416, 304, 20, 26, -0.15, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#111111';
+      ctx.beginPath();
+      ctx.arc(423, 306, 4.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(400, 282);
+      ctx.lineTo(426, 270);
+      ctx.stroke();
+
+      ctx.fillStyle = '#d91c34';
+      ctx.beginPath();
+      ctx.moveTo(275, 312);
+      ctx.quadraticCurveTo(350, 300, 425, 312);
+      ctx.lineTo(466, 386);
+      ctx.quadraticCurveTo(350, 366, 234, 386);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#f8d828';
+      ctx.beginPath();
+      ctx.ellipse(234, 392, 18, 15, -0.4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.ellipse(466, 392, 18, 15, 0.4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#f4cfa6';
+      ctx.beginPath();
+      ctx.moveTo(246, 380);
+      ctx.quadraticCurveTo(350, 362, 454, 380);
+      ctx.lineTo(454, 434);
+      ctx.lineTo(246, 434);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(350, 398);
+      ctx.lineTo(350, 412);
+      ctx.lineTo(344, 422);
+      ctx.moveTo(350, 412);
+      ctx.lineTo(356, 422);
+      ctx.stroke();
+
+      ctx.fillStyle = '#6c3824';
+      ctx.beginPath();
+      ctx.moveTo(246, 426);
+      ctx.quadraticCurveTo(350, 436, 454, 426);
+      ctx.lineTo(454, 456);
+      ctx.lineTo(246, 456);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      const dataUrl = c.toDataURL('image/png');
+      const imgEl = document.getElementById('raMarkerPreview');
+      const dlEl = document.getElementById('downloadMarkerBtn');
+      if (imgEl) imgEl.src = dataUrl;
+      if (dlEl) dlEl.href = dataUrl;
+    })();
+
+    // --- EFECTO DE BRILLITOS INTERACTIVOS (SPARKLES) ---
+    const pastelSparkleColors = ['#fca5ba', '#ffd29d', '#ffccd5', '#b7e4c7', '#ffffff'];
+    const cards = document.querySelectorAll('.mac-window');
+
+    cards.forEach(card => {
+      let throttleTimer = false;
+
+      function spawnSparkle(e) {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        const sparkle = document.createElement('div');
+        sparkle.classList.add('sparkle');
+
+        const size = Math.floor(Math.random() * 10) + 12;
+        const color = pastelSparkleColors[Math.floor(Math.random() * pastelSparkleColors.length)];
+        const tx = (Math.random() - 0.5) * 50;
+        const ty = (Math.random() - 0.8) * 45;
+
+        sparkle.style.left = `${x}px`;
+        sparkle.style.top = `${y}px`;
+        sparkle.style.setProperty('--tx', `${tx}px`);
+        sparkle.style.setProperty('--ty', `${ty}px`);
+
+        sparkle.innerHTML = `
+          <svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${color}">
+            <path d="M12 0L14.4 8.6L23 11L14.4 13.4L12 22L9.6 13.4L1 11L9.6 8.6Z" />
+          </svg>
+        `;
+
+        card.appendChild(sparkle);
+
+        setTimeout(() => {
+          sparkle.remove();
+        }, 900);
+      }
+
+      card.addEventListener('mousemove', (e) => {
+        if (!throttleTimer) {
+          spawnSparkle(e);
+          throttleTimer = true;
+          setTimeout(() => {
+            throttleTimer = false;
+          }, 80);
+        }
+      });
+    });
   </script>
+
 </body>
 </html>
