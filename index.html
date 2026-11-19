@@ -204,6 +204,17 @@
       transform: translateY(-2px);
     }
 
+    .btn-secondary {
+      background-color: #ffe4ec;
+      color: var(--header-text);
+      box-shadow: 0 4px 12px rgba(230, 160, 185, 0.25);
+    }
+
+    .btn-secondary:hover {
+      background-color: #fbd0de;
+      color: var(--header-text);
+    }
+
     /* --- EFECTO DE CHISPAS Y BRILLITOS --- */
     .sparkle {
       position: absolute;
@@ -290,6 +301,23 @@
     .modal-btn {
       width: 100%;
       text-align: center;
+    }
+
+    .marker-preview-box {
+      background: #fff7fa;
+      border: 1px dashed #f3a6b8;
+      border-radius: 14px;
+      padding: 0.75rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .marker-preview-img {
+      width: 150px;
+      height: 150px;
+      object-fit: contain;
+      border-radius: 8px;
     }
 
     .audio-player {
@@ -576,7 +604,7 @@
           <h2 class="project-name">Sonificación</h2>
           <p class="project-desc">Canción con bases de datos y Sinfonía Visual.</p>
         </div>
-        <button class="btn" onclick="openModal()">Explorar Proyecto ↗</button>
+        <button class="btn" onclick="openModal('sonificacionModal')">Explorar Proyecto ↗</button>
       </div>
     </article>
 
@@ -619,11 +647,51 @@
         <a href="https://zainaahui.github.io/NUI-mediapipe-/" target="_blank" rel="noopener noreferrer" class="btn">Ver Proyecto ↗</a>
       </div>
     </article>
+
+    <!-- Proyecto: RA -->
+    <article class="mac-window">
+      <div class="mac-titlebar">
+        <div class="mac-buttons">
+          <span class="mac-dot close"></span>
+          <span class="mac-dot minimize"></span>
+          <span class="mac-dot maximize"></span>
+        </div>
+        <span class="mac-title-text">realidad-aumentada.ar</span>
+      </div>
+      <div class="mac-content">
+        <div>
+          <div class="illustration-wrapper">
+            <svg class="planet-svg" viewBox="0 0 200 160">
+              <defs>
+                <linearGradient id="planetGrad8" x1="10%" y1="0%" x2="90%" y2="100%">
+                  <stop offset="0%" stop-color="#ffdce6"/>
+                  <stop offset="55%" stop-color="#f58fa9"/>
+                  <stop offset="100%" stop-color="#ce4d76"/>
+                </linearGradient>
+              </defs>
+              <circle cx="100" cy="80" r="54" fill="#ffeaf0" opacity="0.6"/>
+              <ellipse cx="100" cy="80" rx="66" ry="20" fill="none" stroke="#f4b2c4" stroke-width="2" transform="rotate(16 100 80)" opacity="0.85"/>
+              <g class="planet-group">
+                <circle cx="100" cy="80" r="36" fill="url(#planetGrad8)"/>
+                <path d="M 75 63 A 36 36 0 0 1 124 54" fill="none" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round" opacity="0.6"/>
+                <circle cx="112" cy="88" r="5" fill="#ffffff" opacity="0.25"/>
+              </g>
+              <path class="twinkle-star" d="M48 42 L49.6 46 L53.6 47.6 L49.6 49.2 L48 53.2 L46.4 49.2 L42.4 47.6 L46.4 46 Z" fill="#fca5ba"/>
+              <circle cx="155" cy="114" r="2" fill="#fca5ba" opacity="0.8"/>
+            </svg>
+          </div>
+          <h2 class="project-name">Proyecto: RA</h2>
+          <p class="project-desc">realidad aumentada con marcador</p>
+        </div>
+        <button class="btn" onclick="openModal('raModal')">Explorar Proyecto ↗</button>
+      </div>
+    </article>
   </main>
 
-  <div class="modal-overlay" id="sonificacionModal" onclick="closeModal(event)">
+  <!-- Modal Sonificación -->
+  <div class="modal-overlay" id="sonificacionModal" onclick="closeModal(event, 'sonificacionModal')">
     <div class="modal-box" onclick="event.stopPropagation()">
-      <button class="close-modal" onclick="closeModalDirect()">&times;</button>
+      <button class="close-modal" onclick="closeModalDirect('sonificacionModal')">&times;</button>
       <h3 class="modal-title">Sonificación</h3>
       <p class="modal-subtitle">Selecciona la opción que deseas abrir:</p>
       <div class="modal-options">
@@ -637,27 +705,172 @@
     </div>
   </div>
 
+  <!-- Modal Proyecto: RA (Descarga del marcador primero) -->
+  <div class="modal-overlay" id="raModal" onclick="closeModal(event, 'raModal')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <button class="close-modal" onclick="closeModalDirect('raModal')">&times;</button>
+      <h3 class="modal-title">Proyecto: RA</h3>
+      <p class="modal-subtitle">Descarga primero el marcador para apuntar con tu cámara y luego abre el proyecto:</p>
+      <div class="modal-options">
+        <div class="marker-preview-box">
+          <img id="raMarkerPreview" alt="Marcador de Realidad Aumentada" class="marker-preview-img" />
+        </div>
+        <a id="downloadMarkerBtn" download="marcador.png" class="btn btn-secondary modal-btn">⬇ Descargar marcador.png</a>
+        <a href="https://zainaahui.github.io/ratita-realidad-aumentada-con-marcador/" target="_blank" rel="noopener noreferrer" class="btn modal-btn">Ir al Proyecto RA ↗</a>
+      </div>
+    </div>
+  </div>
+
   <footer>
     <p>Diseñado en tonos pastel • Galaxia digital de proyectos</p>
   </footer>
 
   <script>
-    // --- LÓGICA DEL MODAL ---
-    const modal = document.getElementById('sonificacionModal');
-
-    function openModal() {
-      modal.classList.add('active');
+    // --- LÓGICA DE MODALES ---
+    function openModal(modalId) {
+      const targetModal = document.getElementById(modalId);
+      if (targetModal) targetModal.classList.add('active');
     }
 
-    function closeModalDirect() {
-      modal.classList.remove('active');
+    function closeModalDirect(modalId) {
+      const targetModal = document.getElementById(modalId);
+      if (targetModal) targetModal.classList.remove('active');
     }
 
-    function closeModal(event) {
-      if (event.target === modal) {
-        modal.classList.remove('active');
+    function closeModal(event, modalId) {
+      const targetModal = document.getElementById(modalId);
+      if (targetModal && event.target === targetModal) {
+        targetModal.classList.remove('active');
       }
     }
+
+    // --- GENERAR MARCADOR DESCARGABLE (marcador.png) ---
+    (function buildMarkerDownload() {
+      const c = document.createElement('canvas');
+      c.width = 700;
+      c.height = 700;
+      const ctx = c.getContext('2d');
+
+      // Fondo blanco y marco negro del marcador
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, 700, 700);
+
+      ctx.fillStyle = '#050505';
+      ctx.fillRect(70, 70, 560, 560);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(210, 210, 280, 280);
+
+      // Gorro celeste con borde amarillo y pompón
+      ctx.fillStyle = '#55c5d8';
+      ctx.strokeStyle = '#111111';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(270, 280);
+      ctx.quadraticCurveTo(350, 200, 430, 280);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#f8d828';
+      ctx.beginPath();
+      ctx.ellipse(350, 224, 22, 11, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#f8d828';
+      ctx.beginPath();
+      ctx.moveTo(270, 280);
+      ctx.quadraticCurveTo(350, 304, 430, 280);
+      ctx.lineTo(430, 290);
+      ctx.quadraticCurveTo(350, 314, 270, 290);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Rostro y ojo derecho
+      ctx.fillStyle = '#f4cfa6';
+      ctx.beginPath();
+      ctx.ellipse(355, 312, 74, 46, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath();
+      ctx.ellipse(416, 304, 20, 26, -0.15, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = '#111111';
+      ctx.beginPath();
+      ctx.arc(423, 306, 4.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(400, 282);
+      ctx.lineTo(426, 270);
+      ctx.stroke();
+
+      // Suéter rojo
+      ctx.fillStyle = '#d91c34';
+      ctx.beginPath();
+      ctx.moveTo(275, 312);
+      ctx.quadraticCurveTo(350, 300, 425, 312);
+      ctx.lineTo(466, 386);
+      ctx.quadraticCurveTo(350, 366, 234, 386);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Guantes amarillos
+      ctx.fillStyle = '#f8d828';
+      ctx.beginPath();
+      ctx.ellipse(234, 392, 18, 15, -0.4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.ellipse(466, 392, 18, 15, 0.4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Espalda / trasero y pantalón café
+      ctx.fillStyle = '#f4cfa6';
+      ctx.beginPath();
+      ctx.moveTo(246, 380);
+      ctx.quadraticCurveTo(350, 362, 454, 380);
+      ctx.lineTo(454, 434);
+      ctx.lineTo(246, 434);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Línea central
+      ctx.beginPath();
+      ctx.moveTo(350, 398);
+      ctx.lineTo(350, 412);
+      ctx.lineTo(344, 422);
+      ctx.moveTo(350, 412);
+      ctx.lineTo(356, 422);
+      ctx.stroke();
+
+      // Pantalón café
+      ctx.fillStyle = '#6c3824';
+      ctx.beginPath();
+      ctx.moveTo(246, 426);
+      ctx.quadraticCurveTo(350, 436, 454, 426);
+      ctx.lineTo(454, 456);
+      ctx.lineTo(246, 456);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      const dataUrl = c.toDataURL('image/png');
+      const imgEl = document.getElementById('raMarkerPreview');
+      const dlEl = document.getElementById('downloadMarkerBtn');
+      if (imgEl) imgEl.src = dataUrl;
+      if (dlEl) dlEl.href = dataUrl;
+    })();
 
     // --- EFECTO DE BRILLITOS INTERACTIVOS (SPARKLES) ---
     const pastelSparkleColors = ['#fca5ba', '#ffd29d', '#ffccd5', '#b7e4c7', '#ffffff'];
