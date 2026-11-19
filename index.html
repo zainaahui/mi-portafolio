@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NUI &amp; MediaPipe · Cara, Cuerpo y Jellybaby Squishy</title>
+  <title>NUI &amp; MediaPipe · Cara, Cuerpo y Manos</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -11,7 +11,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose/pose.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -21,11 +20,6 @@
       background: rgba(15, 23, 42, 0.85);
       backdrop-filter: blur(16px);
       border: 1px solid rgba(255, 255, 255, 0.12);
-    }
-    .neutral-panel {
-      background: rgba(255, 255, 255, 0.72);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(0, 0, 0, 0.08);
     }
     video, canvas.overlay {
       transform: scaleX(-1);
@@ -47,15 +41,15 @@
     .heart-glow { animation: heartPulse 1.5s infinite ease-in-out; }
   </style>
 </head>
-<body id="body-theme" class="bg-[#e6e4df] min-h-screen text-stone-800 flex flex-col items-center justify-between p-4 md:p-8 transition-colors duration-700">
+<body id="body-theme" class="bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 min-h-screen text-slate-100 flex flex-col items-center justify-between p-4 md:p-8 transition-colors duration-700">
 
   <!-- Modal de aviso -->
-  <div id="modal-overlay" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
-    <div class="bg-white p-6 rounded-3xl max-w-sm w-full text-center text-stone-800 shadow-2xl transform scale-95 transition-transform duration-300" id="modal-content">
+  <div id="modal-overlay" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="glass-panel p-6 rounded-3xl max-w-sm w-full text-center text-slate-100 shadow-2xl transform scale-95 transition-transform duration-300" id="modal-content">
       <div id="modal-icon" class="text-4xl mb-3">⚠️</div>
       <h3 id="modal-title" class="text-lg font-bold mb-2">Aviso</h3>
-      <p id="modal-message" class="text-sm text-stone-600 mb-6">Mensaje descriptivo aquí.</p>
-      <button type="button" onclick="closeModal()" class="w-full py-2.5 rounded-xl bg-stone-800 text-white font-semibold text-sm shadow-lg hover:bg-stone-700 active:scale-95 transition">Entendido</button>
+      <p id="modal-message" class="text-sm text-slate-300 mb-6">Mensaje descriptivo aquí.</p>
+      <button type="button" onclick="closeModal()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold text-sm shadow-lg hover:opacity-90 active:scale-95 transition">Entendido</button>
     </div>
   </div>
 
@@ -63,25 +57,25 @@
   <header class="w-full max-w-6xl space-y-6 mb-6">
     <div class="flex flex-col md:flex-row items-center justify-between gap-4">
       <div class="flex items-center space-x-3">
-        <div id="header-logo" class="w-12 h-12 bg-stone-800 rounded-2xl flex items-center justify-center shadow-md text-stone-100 text-2xl transition-all duration-500">
-          <i class="fa-solid fa-hand-sparkles"></i>
+        <div id="header-logo" class="w-12 h-12 bg-gradient-to-tr from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg text-white text-2xl transition-all duration-500">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
         </div>
         <div>
-          <h1 id="header-title" class="text-2xl md:text-3xl font-extrabold text-stone-800">
+          <h1 id="header-title" class="text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-sky-300 via-purple-300 to-rose-300 bg-clip-text text-transparent">
             NUI &amp; MediaPipe · Visión Interactiva
           </h1>
-          <p id="header-subtitle" class="text-xs md:text-sm text-stone-500">
-            Interfaz Natural de Usuario (NUI) · Manos Squishy, Rostro y Cuerpo
+          <p class="text-xs md:text-sm text-slate-400">
+            Interfaz Natural de Usuario (NUI) en tiempo real con MediaPipe Face Mesh y Pose
           </p>
         </div>
       </div>
 
       <div class="flex flex-wrap items-center gap-3">
-        <div id="status-badge" class="px-4 py-2 rounded-full text-xs font-medium bg-amber-500/15 text-amber-800 border border-amber-500/30 flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+        <div id="status-badge" class="px-4 py-2 rounded-full text-xs font-medium bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
           Cargando modelos MediaPipe...
         </div>
-        <button id="toggle-btn" type="button" class="px-5 py-2.5 rounded-xl font-bold text-sm text-white bg-stone-800 hover:bg-stone-700 transition shadow-md active:scale-95 disabled:opacity-50" disabled>
+        <button id="toggle-btn" type="button" class="px-5 py-2.5 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-indigo-500 to-purple-600 hover:opacity-90 transition shadow-lg active:scale-95 disabled:opacity-50" disabled>
           Iniciar Cámara
         </button>
       </div>
@@ -89,40 +83,40 @@
 
     <!-- Descripción breve de NUI y MediaPipe -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div id="info-card-1" class="neutral-panel p-4 rounded-2xl text-xs md:text-sm text-stone-600">
-        <span id="info-title-1" class="font-bold text-stone-800 block mb-1">¿Qué es NUI?</span>
+      <div class="glass-panel p-4 rounded-2xl text-xs md:text-sm text-slate-300">
+        <span class="font-bold text-sky-300 block mb-1">¿Qué es NUI?</span>
         Una <strong>Natural User Interface (NUI)</strong> permite interactuar con sistemas digitales mediante gestos, posturas o expresiones humanas naturales, sin depender de teclado o ratón.
       </div>
-      <div id="info-card-2" class="neutral-panel p-4 rounded-2xl text-xs md:text-sm text-stone-600">
-        <span id="info-title-2" class="font-bold text-stone-800 block mb-1">¿Qué es MediaPipe?</span>
-        Es el framework de visión por computadora de Google que detecta puntos clave (<em>landmarks</em>) de las manos, rostro y cuerpo en tiempo real directamente en el navegador.
+      <div class="glass-panel p-4 rounded-2xl text-xs md:text-sm text-slate-300">
+        <span class="font-bold text-purple-300 block mb-1">¿Qué es MediaPipe?</span>
+        Es el framework de visión por computadora de Google que detecta puntos clave (<em>landmarks</em>) del rostro, cuerpo y manos en tiempo real directamente en el navegador.
       </div>
     </div>
 
-    <!-- Selector de 3 opciones: Manos (Jellybaby), Cara y Cuerpo -->
+    <!-- Selector de 3 opciones: Manos, Cara y Cuerpo -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-      <button id="tab-manos" type="button" onclick="switchTracker('MANOS')" class="neutral-panel p-4 rounded-2xl flex items-center justify-between transition border-2 border-emerald-600 bg-white/90 text-left shadow-sm">
+      <a href="jellybaby.html" class="glass-panel hover:bg-slate-800/90 p-4 rounded-2xl flex items-center justify-between transition border border-emerald-500/30">
         <div>
-          <div class="text-xs text-emerald-700 font-semibold">Opción 1 · Hands Squishy</div>
-          <div id="tab-manos-title" class="text-base font-bold text-stone-800">🧸 Manos (Jellybaby)</div>
+          <div class="text-xs text-emerald-300 font-semibold">Opción 1 · jellybaby.html</div>
+          <div class="text-base font-bold text-white">🖐️ Manos (Jellybaby 3D)</div>
         </div>
-        <i class="fa-solid fa-hand-holding-heart text-emerald-600 text-lg"></i>
+        <i class="fa-solid fa-arrow-up-right-from-square text-emerald-300"></i>
+      </a>
+
+      <button id="tab-cara" type="button" onclick="switchTracker('CARA')" class="glass-panel p-4 rounded-2xl flex items-center justify-between transition border-2 border-amber-400 bg-slate-800/90 text-left">
+        <div>
+          <div class="text-xs text-amber-300 font-semibold">Opción 2 · Face Mesh</div>
+          <div class="text-base font-bold text-white">😇 Cara (Ángel / Demonio)</div>
+        </div>
+        <i class="fa-solid fa-face-smile text-amber-300 text-lg"></i>
       </button>
 
-      <button id="tab-cara" type="button" onclick="switchTracker('CARA')" class="neutral-panel hover:bg-white/80 p-4 rounded-2xl flex items-center justify-between transition border border-stone-300 text-left">
+      <button id="tab-cuerpo" type="button" onclick="switchTracker('CUERPO')" class="glass-panel hover:bg-slate-800/90 p-4 rounded-2xl flex items-center justify-between transition border border-rose-500/30 text-left">
         <div>
-          <div class="text-xs text-amber-700 font-semibold">Opción 2 · Face Mesh</div>
-          <div id="tab-cara-title" class="text-base font-bold text-stone-800">😇 Cara (Ángel / Demonio)</div>
+          <div class="text-xs text-rose-300 font-semibold">Opción 3 · Pose</div>
+          <div class="text-base font-bold text-white">💖 Cuerpo (Corazones / Estrellas)</div>
         </div>
-        <i class="fa-solid fa-face-smile text-amber-600 text-lg"></i>
-      </button>
-
-      <button id="tab-cuerpo" type="button" onclick="switchTracker('CUERPO')" class="neutral-panel hover:bg-white/80 p-4 rounded-2xl flex items-center justify-between transition border border-stone-300 text-left">
-        <div>
-          <div class="text-xs text-rose-700 font-semibold">Opción 3 · Pose</div>
-          <div id="tab-cuerpo-title" class="text-base font-bold text-stone-800">💖 Cuerpo (Corazones / Estrellas)</div>
-        </div>
-        <i class="fa-solid fa-person-running text-rose-600 text-lg"></i>
+        <i class="fa-solid fa-person-running text-rose-400 text-lg"></i>
       </button>
     </div>
   </header>
@@ -130,82 +124,24 @@
   <!-- Contenido principal -->
   <main class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-3 gap-6 flex-grow items-center">
     <!-- Cámara y Canvas -->
-    <div id="camera-container" class="lg:col-span-2 relative w-full aspect-[4/3] bg-[#dedbd4] rounded-3xl overflow-hidden shadow-xl border-4 border-stone-300 transition-all duration-500">
+    <div id="camera-container" class="lg:col-span-2 relative w-full aspect-[4/3] bg-slate-950 rounded-3xl overflow-hidden shadow-2xl border-4 border-slate-700/60 transition-all duration-500">
       <video id="webcam" class="absolute inset-0 w-full h-full object-cover" playsinline></video>
-      <!-- Canvas de efecto Jellybaby con fondo neutro -->
-      <canvas id="jelly_canvas" class="absolute inset-0 w-full h-full object-cover pointer-events-none"></canvas>
-      <!-- Canvas de overlays de Cara / Cuerpo / Esqueleto de mano -->
       <canvas id="output_canvas" class="absolute inset-0 w-full h-full object-cover pointer-events-none overlay"></canvas>
       <div id="camera-ambient-glow" class="absolute inset-0 pointer-events-none transition-all duration-500 opacity-0"></div>
 
-      <div id="video-placeholder" class="absolute inset-0 flex flex-col items-center justify-center bg-[#e6e4df]/95 text-stone-800 p-6 text-center z-10 backdrop-blur-md">
-        <div class="w-20 h-20 bg-stone-800/10 rounded-full flex items-center justify-center mb-4 text-4xl border border-stone-800/15 text-stone-700">
+      <div id="video-placeholder" class="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/90 text-white p-6 text-center z-10 backdrop-blur-md">
+        <div class="w-20 h-20 bg-indigo-500/20 rounded-full flex items-center justify-center mb-4 text-4xl border border-indigo-500/30 animate-bounce text-indigo-400">
           <i class="fa-solid fa-camera"></i>
         </div>
-        <h3 class="text-lg font-bold mb-1">Cámara Inactiva</h3>
-        <p class="text-sm text-stone-500 max-w-xs">Haz clic en "Iniciar Cámara" para apretar el Jellybaby con tus manos o activar los filtros.</p>
+        <h3 class="text-lg font-semibold mb-1">Cámara Inactiva</h3>
+        <p class="text-sm text-slate-400 max-w-xs">Haz clic en "Iniciar Cámara" para activar la detección en vivo.</p>
       </div>
     </div>
 
-    <!-- Panel lateral dinámico (Manos Jellybaby, Cara o Cuerpo) -->
-    <div id="side-panel" class="neutral-panel text-stone-800 p-6 rounded-3xl shadow-lg flex flex-col justify-between h-full space-y-6">
-      
-      <!-- Panel Modo Manos (Jellybaby Squishy) -->
-      <div id="panel-manos" class="space-y-5">
-        <div class="flex items-center justify-between">
-          <div>
-            <h2 class="text-lg font-bold flex items-center gap-2 text-stone-800">
-              <i class="fa-solid fa-hand-sparkles text-emerald-600"></i> Jellybaby Squishy
-            </h2>
-            <p class="text-xs text-stone-500">Aprieta y estira con tus manos en el aire</p>
-          </div>
-          <button id="sound-toggle-btn" type="button" onclick="toggleJellySound()" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-stone-200 hover:bg-stone-300 text-stone-700 transition flex items-center gap-1.5">
-            <i id="sound-icon" class="fa-solid fa-volume-high text-emerald-600"></i>
-            <span id="sound-label">Sonido ON</span>
-          </button>
-        </div>
-
-        <div id="jelly-status-card" class="p-5 rounded-2xl bg-stone-100/90 border border-stone-200 text-center transition-all duration-300">
-          <div id="jelly-emoji" class="text-4xl mb-2 transition-transform duration-150">🧸</div>
-          <div class="text-xs font-bold uppercase tracking-wider text-stone-400 mb-1">Estado del Squishy</div>
-          <div id="jelly-state-title" class="text-lg font-extrabold text-stone-800">Listo para apretar</div>
-          <div id="jelly-state-desc" class="text-xs text-stone-500 mt-1">Acerca tu mano o junta pulgar e índice (pellizco)</div>
-        </div>
-
-        <!-- Medidor de presión / squish -->
-        <div class="space-y-3">
-          <div>
-            <div class="flex justify-between text-xs font-medium mb-1 text-stone-600">
-              <span>Nivel de Apretón (Squish)</span>
-              <span id="squish-percent">0%</span>
-            </div>
-            <div class="w-full bg-stone-200 h-2.5 rounded-full overflow-hidden">
-              <div id="squish-bar" class="bg-emerald-500 h-full rounded-full transition-all duration-75" style="width: 0%"></div>
-            </div>
-          </div>
-
-          <!-- Selector de sabores/colores suaves -->
-          <div>
-            <span class="text-xs font-medium text-stone-600 block mb-2">Color del Jellybaby:</span>
-            <div class="flex items-center gap-2">
-              <button type="button" onclick="setJellyColor('#f472b6', '#fbcfe8', 'Fresa Suave')" class="w-7 h-7 rounded-full bg-pink-400 border-2 border-white shadow hover:scale-110 transition" title="Fresa"></button>
-              <button type="button" onclick="setJellyColor('#fbbf24', '#fef3c7', 'Miel Limón')" class="w-7 h-7 rounded-full bg-amber-400 border-2 border-white shadow hover:scale-110 transition" title="Limón"></button>
-              <button type="button" onclick="setJellyColor('#34d399', '#d1fae5', 'Menta Dulce')" class="w-7 h-7 rounded-full bg-emerald-400 border-2 border-white shadow hover:scale-110 transition" title="Menta"></button>
-              <button type="button" onclick="setJellyColor('#60a5fa', '#dbeafe', 'Mora Azul')" class="w-7 h-7 rounded-full bg-blue-400 border-2 border-white shadow hover:scale-110 transition" title="Mora"></button>
-              <button type="button" onclick="setJellyColor('#a78bfa', '#ede9fe', 'Uva Pastel')" class="w-7 h-7 rounded-full bg-violet-400 border-2 border-white shadow hover:scale-110 transition" title="Uva"></button>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-stone-100/80 p-4 rounded-2xl border border-stone-200 text-xs text-stone-600 space-y-1.5">
-          <p>• <b>Pellizcar (Pulgar + Índice):</b> Aplasta y estira el Jellybaby con sonido elástico.</p>
-          <p>• <b>Mano abierta / Empujar:</b> Rebota y se deforma suavemente al contacto.</p>
-          <p>• <b>Fondo neutro:</b> Diseñado en tonos piedra suaves para evitar fatiga visual.</p>
-        </div>
-      </div>
-
+    <!-- Panel lateral dinámico (Cara o Cuerpo) -->
+    <div class="glass-panel text-slate-100 p-6 rounded-3xl shadow-xl flex flex-col justify-between h-full space-y-6">
       <!-- Panel Modo Cara -->
-      <div id="panel-cara" class="space-y-5 hidden">
+      <div id="panel-cara" class="space-y-5">
         <div>
           <h2 class="text-lg font-bold flex items-center gap-2">
             <i class="fa-solid fa-eye text-amber-400"></i> Estado Facial (EAR)
@@ -280,34 +216,26 @@
           </div>
         </div>
       </div>
-
     </div>
   </main>
 
-  <footer id="footer-text" class="w-full max-w-6xl text-center py-4 text-xs text-stone-500 mt-4">
-    MediaPipe Hands, Face Mesh &amp; Pose · Web Audio Squishy · Tailwind CSS
+  <footer class="w-full max-w-6xl text-center py-4 text-xs text-slate-500 mt-4">
+    MediaPipe Face Mesh &amp; Pose · HTML5 Canvas · Tailwind CSS
   </footer>
 
   <script>
     const videoElement = document.getElementById('webcam');
     const canvasElement = document.getElementById('output_canvas');
     const canvasCtx = canvasElement.getContext('2d');
-    const jellyCanvas = document.getElementById('jelly_canvas');
-    const jellyCtx = jellyCanvas.getContext('2d');
-
     const toggleBtn = document.getElementById('toggle-btn');
     const statusBadge = document.getElementById('status-badge');
     const videoPlaceholder = document.getElementById('video-placeholder');
     const cameraContainer = document.getElementById('camera-container');
     const cameraAmbientGlow = document.getElementById('camera-ambient-glow');
     const bodyTheme = document.getElementById('body-theme');
-    const sidePanel = document.getElementById('side-panel');
 
-    const panelManos = document.getElementById('panel-manos');
     const panelCara = document.getElementById('panel-cara');
     const panelCuerpo = document.getElementById('panel-cuerpo');
-
-    const tabManos = document.getElementById('tab-manos');
     const tabCara = document.getElementById('tab-cara');
     const tabCuerpo = document.getElementById('tab-cuerpo');
 
@@ -320,17 +248,11 @@
     const modeTitle = document.getElementById('mode-title');
     const modeDesc = document.getElementById('mode-desc');
 
+    const gestureCard = document.getElementById('gesture-card');
     const gestureIcon = document.getElementById('gesture-icon');
     const gestureName = document.getElementById('gesture-name');
     const gestureDesc = document.getElementById('gesture-desc');
     const poseStatusBadge = document.getElementById('pose-status-badge');
-
-    // UI Jellybaby
-    const squishPercent = document.getElementById('squish-percent');
-    const squishBar = document.getElementById('squish-bar');
-    const jellyEmoji = document.getElementById('jelly-emoji');
-    const jellyStateTitle = document.getElementById('jelly-state-title');
-    const jellyStateDesc = document.getElementById('jelly-state-desc');
 
     function showModal(title, message, icon = '⚠️') {
       document.getElementById('modal-title').textContent = title;
@@ -351,308 +273,10 @@
       content.classList.add('scale-95');
     }
 
-    // ==========================================
-    // SISTEMA DE EFECTOS DE SONIDO SQUISHY (Web Audio API)
-    // ==========================================
-    let audioCtx = null;
-    let soundEnabled = true;
-    let lastSquishSoundTime = 0;
-    let wasPinching = false;
-
-    function initAudio() {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-    }
-
-    function toggleJellySound() {
-      soundEnabled = !soundEnabled;
-      const icon = document.getElementById('sound-icon');
-      const label = document.getElementById('sound-label');
-      if (soundEnabled) {
-        initAudio();
-        icon.className = 'fa-solid fa-volume-high text-emerald-600';
-        label.textContent = 'Sonido ON';
-        playPopSound(520);
-      } else {
-        icon.className = 'fa-solid fa-volume-xmark text-stone-400';
-        label.textContent = 'Sonido OFF';
-      }
-    }
-
-    function playSquishSound(intensity = 0.5) {
-      if (!soundEnabled) return;
-      const now = performance.now();
-      if (now - lastSquishSoundTime < 140) return;
-      lastSquishSoundTime = now;
-
-      initAudio();
-      const t = audioCtx.currentTime;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      const filter = audioCtx.createBiquadFilter();
-
-      osc.type = 'sine';
-      const baseFreq = 160 + intensity * 220;
-      osc.frequency.setValueAtTime(baseFreq, t);
-      osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.65, t + 0.09);
-      osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.75, t + 0.18);
-
-      filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(700 + intensity * 600, t);
-
-      gain.gain.setValueAtTime(0.01, t);
-      gain.gain.linearRampToValueAtTime(0.18 * Math.min(1, intensity + 0.3), t + 0.04);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.19);
-
-      osc.connect(filter);
-      filter.connect(gain);
-      gain.connect(audioCtx.destination);
-
-      osc.start(t);
-      osc.stop(t + 0.2);
-    }
-
-    function playBoingSound() {
-      if (!soundEnabled) return;
-      initAudio();
-      const t = audioCtx.currentTime;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-
-      osc.type = 'triangle';
-      osc.frequency.setValueAtTime(220, t);
-      osc.frequency.exponentialRampToValueAtTime(480, t + 0.08);
-      osc.frequency.exponentialRampToValueAtTime(260, t + 0.16);
-      osc.frequency.exponentialRampToValueAtTime(390, t + 0.24);
-
-      gain.gain.setValueAtTime(0.15, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.26);
-
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-
-      osc.start(t);
-      osc.stop(t + 0.27);
-    }
-
-    function playPopSound(freq = 440) {
-      if (!soundEnabled) return;
-      initAudio();
-      const t = audioCtx.currentTime;
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'sine';
-      osc.frequency.setValueAtTime(freq, t);
-      osc.frequency.exponentialRampToValueAtTime(freq * 1.4, t + 0.08);
-      gain.gain.setValueAtTime(0.12, t);
-      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start(t);
-      osc.stop(t + 0.1);
-    }
-
-    // ==========================================
-    // FÍSICA Y RENDERIZADO DEL JELLYBABY SQUISHY
-    // ==========================================
-    const jellyState = {
-      x: 320,
-      y: 240,
-      targetX: 320,
-      targetY: 240,
-      scaleX: 1,
-      scaleY: 1,
-      velScaleX: 0,
-      velScaleY: 0,
-      targetScaleX: 1,
-      targetScaleY: 1,
-      rotation: 0,
-      colorMain: '#f472b6',
-      colorHighlight: '#fbcfe8',
-      squishAmount: 0,
-      wobblePhase: 0
-    };
-
-    function setJellyColor(main, highlight, name) {
-      jellyState.colorMain = main;
-      jellyState.colorHighlight = highlight;
-      jellyState.velScaleX += 0.18;
-      jellyState.velScaleY -= 0.15;
-      playPopSound(580);
-      jellyStateDesc.textContent = `Sabor activo: ${name}`;
-    }
-
-    function updateAndDrawJellybaby() {
-      if (activeTracker !== 'MANOS') return;
-
-      const w = jellyCanvas.width || 640;
-      const h = jellyCanvas.height || 480;
-
-      // Fondo neutro cálido y mate (sin brillos estridentes)
-      jellyCtx.clearRect(0, 0, w, h);
-      const bgGrad = jellyCtx.createRadialGradient(w * 0.5, h * 0.45, 40, w * 0.5, h * 0.5, w * 0.75);
-      bgGrad.addColorStop(0, 'rgba(244, 242, 238, 0.88)');
-      bgGrad.addColorStop(1, 'rgba(222, 219, 212, 0.92)');
-      jellyCtx.fillStyle = bgGrad;
-      jellyCtx.fillRect(0, 0, w, h);
-
-      // Física de resorte elástico (spring physics)
-      const stiffness = 0.16;
-      const damping = 0.76;
-
-      const forceX = (jellyState.targetScaleX - jellyState.scaleX) * stiffness;
-      const forceY = (jellyState.targetScaleY - jellyState.scaleY) * stiffness;
-
-      jellyState.velScaleX = (jellyState.velScaleX + forceX) * damping;
-      jellyState.velScaleY = (jellyState.velScaleY + forceY) * damping;
-
-      jellyState.scaleX += jellyState.velScaleX;
-      jellyState.scaleY += jellyState.velScaleY;
-
-      jellyState.x += (jellyState.targetX - jellyState.x) * 0.15;
-      jellyState.y += (jellyState.targetY - jellyState.y) * 0.15;
-      jellyState.wobblePhase += 0.08;
-
-      const wobble = Math.sin(jellyState.wobblePhase) * 0.015;
-      const sx = Math.max(0.55, Math.min(1.65, jellyState.scaleX + wobble));
-      const sy = Math.max(0.55, Math.min(1.65, jellyState.scaleY - wobble));
-
-      jellyCtx.save();
-      jellyCtx.translate(jellyState.x, jellyState.y);
-
-      // Sombra suave en el suelo neutro
-      jellyCtx.save();
-      jellyCtx.translate(0, 125 * sy);
-      jellyCtx.scale(sx * 1.05, 0.25);
-      jellyCtx.fillStyle = 'rgba(68, 64, 60, 0.18)';
-      jellyCtx.beginPath();
-      jellyCtx.arc(0, 0, 75, 0, Math.PI * 2);
-      jellyCtx.fill();
-      jellyCtx.restore();
-
-      jellyCtx.rotate(jellyState.rotation);
-      jellyCtx.scale(sx, sy);
-
-      // Función auxiliar para dibujar partes gomosas del Jellybaby
-      function drawJellyPart(x, y, rx, ry, rot = 0) {
-        jellyCtx.save();
-        jellyCtx.translate(x, y);
-        jellyCtx.rotate(rot);
-
-        const grad = jellyCtx.createRadialGradient(-rx * 0.25, -ry * 0.25, rx * 0.1, 0, 0, Math.max(rx, ry));
-        grad.addColorStop(0, jellyState.colorHighlight);
-        grad.addColorStop(0.45, jellyState.colorMain);
-        grad.addColorStop(1, shadeColor(jellyState.colorMain, -18));
-
-        jellyCtx.fillStyle = grad;
-        jellyCtx.beginPath();
-        jellyCtx.ellipse(0, 0, rx, ry, 0, 0, Math.PI * 2);
-        jellyCtx.fill();
-
-        // Reflejo gomoso sutil (mate/suave, no encandilante)
-        jellyCtx.fillStyle = 'rgba(255, 255, 255, 0.32)';
-        jellyCtx.beginPath();
-        jellyCtx.ellipse(-rx * 0.3, -ry * 0.32, rx * 0.26, ry * 0.14, -0.4, 0, Math.PI * 2);
-        jellyCtx.fill();
-
-        jellyCtx.restore();
-      }
-
-      // Piernas gorditas
-      drawJellyPart(-30, 82, 22, 30, -0.15);
-      drawJellyPart(30, 82, 22, 30, 0.15);
-
-      // Brazos gorditos
-      drawJellyPart(-64, 15, 20, 28, 0.55);
-      drawJellyPart(64, 15, 20, 28, -0.55);
-
-      // Cuerpo principal (barriguita squishy)
-      drawJellyPart(0, 22, 58, 66, 0);
-
-      // Cabeza
-      drawJellyPart(0, -56, 46, 42, 0);
-
-      // Orejitas redondas
-      drawJellyPart(-36, -86, 14, 14, 0);
-      drawJellyPart(36, -86, 14, 14, 0);
-
-      // Caritas expresivas según nivel de apretón
-      jellyCtx.fillStyle = '#3f3b37';
-      if (jellyState.squishAmount > 0.45) {
-        // Ojos apretados (> <)
-        jellyCtx.lineWidth = 4;
-        jellyCtx.strokeStyle = '#3f3b37';
-        jellyCtx.lineCap = 'round';
-        jellyCtx.beginPath();
-        jellyCtx.moveTo(-22, -62); jellyCtx.lineTo(-13, -57); jellyCtx.lineTo(-22, -52);
-        jellyCtx.moveTo(22, -62); jellyCtx.lineTo(13, -57); jellyCtx.lineTo(22, -52);
-        jellyCtx.stroke();
-
-        // Boquita en "o"
-        jellyCtx.beginPath();
-        jellyCtx.ellipse(0, -43, 8, 10, 0, 0, Math.PI * 2);
-        jellyCtx.fill();
-      } else {
-        // Ojos tiernos normales
-        jellyCtx.beginPath();
-        jellyCtx.arc(-16, -58, 5.5, 0, Math.PI * 2);
-        jellyCtx.arc(16, -58, 5.5, 0, Math.PI * 2);
-        jellyCtx.fill();
-
-        // Brillo en ojitos
-        jellyCtx.fillStyle = '#ffffff';
-        jellyCtx.beginPath();
-        jellyCtx.arc(-18, -60, 2, 0, Math.PI * 2);
-        jellyCtx.arc(14, -60, 2, 0, Math.PI * 2);
-        jellyCtx.fill();
-
-        // Sonrisa
-        jellyCtx.strokeStyle = '#3f3b37';
-        jellyCtx.lineWidth = 3.5;
-        jellyCtx.lineCap = 'round';
-        jellyCtx.beginPath();
-        jellyCtx.arc(0, -49, 10, 0.15 * Math.PI, 0.85 * Math.PI);
-        jellyCtx.stroke();
-      }
-
-      // Mejillas sonrojadas suaves
-      jellyCtx.fillStyle = 'rgba(225, 29, 72, 0.18)';
-      jellyCtx.beginPath();
-      jellyCtx.ellipse(-25, -49, 7, 4.5, 0, 0, Math.PI * 2);
-      jellyCtx.ellipse(25, -49, 7, 4.5, 0, 0, Math.PI * 2);
-      jellyCtx.fill();
-
-      jellyCtx.restore();
-    }
-
-    function shadeColor(color, percent) {
-      let R = parseInt(color.substring(1, 3), 16);
-      let G = parseInt(color.substring(3, 5), 16);
-      let B = parseInt(color.substring(5, 7), 16);
-      R = parseInt(R * (100 + percent) / 100);
-      G = parseInt(G * (100 + percent) / 100);
-      B = parseInt(B * (100 + percent) / 100);
-      R = (R < 255) ? R : 255;
-      G = (G < 255) ? G : 255;
-      B = (B < 255) ? B : 255;
-      const RR = ((R.toString(16).length === 1) ? '0' + R.toString(16) : R.toString(16));
-      const GG = ((G.toString(16).length === 1) ? '0' + G.toString(16) : G.toString(16));
-      const BB = ((B.toString(16).length === 1) ? '0' + B.toString(16) : B.toString(16));
-      return '#' + RR + GG + BB;
-    }
-
-    // ==========================================
-    // CONTROLADOR DE PESTAÑAS (MANOS / CARA / CUERPO)
-    // ==========================================
-    let activeTracker = 'MANOS'; // Inicia por defecto en Manos (Jellybaby neutro)
+    let activeTracker = 'CARA'; // 'CARA' o 'CUERPO'
     let mpCamera = null;
     let faceMesh = null;
     let pose = null;
-    let hands = null;
     let isRunning = false;
     let currentMode = 'NEUTRAL';
     let particles = [];
@@ -660,209 +284,25 @@
     let winkCooldown = 0;
     const WINK_THRESHOLD = 0.20;
 
-    function applyNeutralThemeUI() {
-      bodyTheme.className = 'bg-[#e6e4df] min-h-screen text-stone-800 flex flex-col items-center justify-between p-4 md:p-8 transition-colors duration-700';
-      document.getElementById('header-logo').className = 'w-12 h-12 bg-stone-800 rounded-2xl flex items-center justify-center shadow-md text-stone-100 text-2xl transition-all duration-500';
-      document.getElementById('header-title').className = 'text-2xl md:text-3xl font-extrabold text-stone-800';
-      document.getElementById('header-subtitle').className = 'text-xs md:text-sm text-stone-500';
-      toggleBtn.className = 'px-5 py-2.5 rounded-xl font-bold text-sm text-white bg-stone-800 hover:bg-stone-700 transition shadow-md active:scale-95 disabled:opacity-50';
-      document.getElementById('info-card-1').className = 'neutral-panel p-4 rounded-2xl text-xs md:text-sm text-stone-600';
-      document.getElementById('info-card-2').className = 'neutral-panel p-4 rounded-2xl text-xs md:text-sm text-stone-600';
-      document.getElementById('info-title-1').className = 'font-bold text-stone-800 block mb-1';
-      document.getElementById('info-title-2').className = 'font-bold text-stone-800 block mb-1';
-      sidePanel.className = 'neutral-panel text-stone-800 p-6 rounded-3xl shadow-lg flex flex-col justify-between h-full space-y-6';
-      cameraContainer.className = 'lg:col-span-2 relative w-full aspect-[4/3] bg-[#dedbd4] rounded-3xl overflow-hidden shadow-xl border-4 border-stone-300 transition-all duration-500';
-      cameraAmbientGlow.className = 'absolute inset-0 pointer-events-none opacity-0';
-      document.getElementById('footer-text').className = 'w-full max-w-6xl text-center py-4 text-xs text-stone-500 mt-4';
-
-      tabManos.className = 'neutral-panel p-4 rounded-2xl flex items-center justify-between transition border-2 border-emerald-600 bg-white/90 text-left shadow-sm';
-      tabCara.className = 'neutral-panel hover:bg-white/80 p-4 rounded-2xl flex items-center justify-between transition border border-stone-300 text-left';
-      tabCuerpo.className = 'neutral-panel hover:bg-white/80 p-4 rounded-2xl flex items-center justify-between transition border border-stone-300 text-left';
-      document.getElementById('tab-manos-title').className = 'text-base font-bold text-stone-800';
-      document.getElementById('tab-cara-title').className = 'text-base font-bold text-stone-800';
-      document.getElementById('tab-cuerpo-title').className = 'text-base font-bold text-stone-800';
-    }
-
-    function applyDarkThemeUI() {
-      bodyTheme.className = 'bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 min-h-screen text-slate-100 flex flex-col items-center justify-between p-4 md:p-8 transition-colors duration-700';
-      document.getElementById('header-logo').className = 'w-12 h-12 bg-gradient-to-tr from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg text-white text-2xl transition-all duration-500';
-      document.getElementById('header-title').className = 'text-2xl md:text-3xl font-extrabold bg-gradient-to-r from-sky-300 via-purple-300 to-rose-300 bg-clip-text text-transparent';
-      document.getElementById('header-subtitle').className = 'text-xs md:text-sm text-slate-400';
-      toggleBtn.className = 'px-5 py-2.5 rounded-xl font-bold text-sm text-white bg-gradient-to-r from-indigo-500 to-purple-600 hover:opacity-90 transition shadow-lg active:scale-95 disabled:opacity-50';
-      document.getElementById('info-card-1').className = 'glass-panel p-4 rounded-2xl text-xs md:text-sm text-slate-300';
-      document.getElementById('info-card-2').className = 'glass-panel p-4 rounded-2xl text-xs md:text-sm text-slate-300';
-      document.getElementById('info-title-1').className = 'font-bold text-sky-300 block mb-1';
-      document.getElementById('info-title-2').className = 'font-bold text-purple-300 block mb-1';
-      sidePanel.className = 'glass-panel text-slate-100 p-6 rounded-3xl shadow-xl flex flex-col justify-between h-full space-y-6';
-      cameraContainer.className = 'lg:col-span-2 relative w-full aspect-[4/3] bg-slate-950 rounded-3xl overflow-hidden shadow-2xl border-4 border-slate-700/60 transition-all duration-500';
-      document.getElementById('footer-text').className = 'w-full max-w-6xl text-center py-4 text-xs text-slate-500 mt-4';
-
-      document.getElementById('tab-manos-title').className = 'text-base font-bold text-white';
-      document.getElementById('tab-cara-title').className = 'text-base font-bold text-white';
-      document.getElementById('tab-cuerpo-title').className = 'text-base font-bold text-white';
-    }
-
     function switchTracker(mode) {
       activeTracker = mode;
       particles = [];
       canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-      jellyCtx.clearRect(0, 0, jellyCanvas.width, jellyCanvas.height);
 
-      panelManos.classList.add('hidden');
-      panelCara.classList.add('hidden');
-      panelCuerpo.classList.add('hidden');
-
-      if (mode === 'MANOS') {
-        panelManos.classList.remove('hidden');
-        jellyCanvas.classList.remove('hidden');
-        applyNeutralThemeUI();
-        initAudio();
-      } else if (mode === 'CARA') {
+      if (mode === 'CARA') {
         panelCara.classList.remove('hidden');
-        jellyCanvas.classList.add('hidden');
-        applyDarkThemeUI();
-        tabManos.className = 'glass-panel hover:bg-slate-800/90 p-4 rounded-2xl flex items-center justify-between transition border border-emerald-500/30 text-left';
+        panelCuerpo.classList.add('hidden');
         tabCara.className = 'glass-panel p-4 rounded-2xl flex items-center justify-between transition border-2 border-amber-400 bg-slate-800/90 text-left';
         tabCuerpo.className = 'glass-panel hover:bg-slate-800/90 p-4 rounded-2xl flex items-center justify-between transition border border-rose-500/30 text-left';
       } else {
         panelCuerpo.classList.remove('hidden');
-        jellyCanvas.classList.add('hidden');
-        applyDarkThemeUI();
-        tabManos.className = 'glass-panel hover:bg-slate-800/90 p-4 rounded-2xl flex items-center justify-between transition border border-emerald-500/30 text-left';
+        panelCara.classList.add('hidden');
         tabCuerpo.className = 'glass-panel p-4 rounded-2xl flex items-center justify-between transition border-2 border-rose-400 bg-slate-800/90 text-left';
         tabCara.className = 'glass-panel hover:bg-slate-800/90 p-4 rounded-2xl flex items-center justify-between transition border border-amber-500/30 text-left';
         setFaceMode('NEUTRAL');
       }
     }
 
-    // ==========================================
-    // PROCESAMIENTO DE MANOS (JELLYBABY SQUISHY)
-    // ==========================================
-    function onHandsResults(results) {
-      if (activeTracker !== 'MANOS') return;
-
-      const w = videoElement.videoWidth || 640;
-      const h = videoElement.videoHeight || 480;
-      if (canvasElement.width !== w || canvasElement.height !== h) {
-        canvasElement.width = w;
-        canvasElement.height = h;
-        jellyCanvas.width = w;
-        jellyCanvas.height = h;
-      }
-
-      canvasCtx.clearRect(0, 0, w, h);
-
-      let isInteracting = false;
-      let currentSquish = 0;
-
-      if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-        const hand = results.multiHandLandmarks[0];
-        const thumbTip = hand[4];
-        const indexTip = hand[8];
-        const palmCenter = hand[9];
-
-        // Coordenadas espejo en el canvas visual del Jellybaby
-        const visualHandX = (1 - palmCenter.x) * w;
-        const visualHandY = palmCenter.y * h;
-
-        // Distancia entre pulgar e índice (gesto de pellizco / squishy)
-        const pinchDist = Math.hypot(thumbTip.x - indexTip.x, thumbTip.y - indexTip.y);
-        // Normalizar pellizco (0.03 = muy cerrado, 0.22 = abierto)
-        const pinchRatio = Math.max(0, Math.min(1, (0.20 - pinchDist) / 0.16));
-
-        // Distancia de la mano al Jellybaby
-        const distToJelly = Math.hypot(visualHandX - jellyState.x, visualHandY - jellyState.y);
-
-        if (distToJelly < 220 || pinchRatio > 0.2) {
-          isInteracting = true;
-          jellyState.targetX = w * 0.5 + (visualHandX - w * 0.5) * 0.45;
-          jellyState.targetY = h * 0.5 + (visualHandY - h * 0.5) * 0.45;
-
-          if (pinchRatio > 0.25) {
-            // Apretando con pellizco: se achata verticalmente y se ensancha
-            currentSquish = pinchRatio;
-            jellyState.targetScaleX = 1 + pinchRatio * 0.48;
-            jellyState.targetScaleY = 1 - pinchRatio * 0.38;
-            jellyState.rotation = (visualHandX - w * 0.5) * 0.0012;
-
-            playSquishSound(pinchRatio);
-            wasPinching = true;
-
-            jellyEmoji.textContent = '😖';
-            jellyStateTitle.textContent = '¡Apretando Squishy!';
-            jellyStateDesc.textContent = 'Suelta los dedos para que rebote';
-          } else {
-            // Tocando o empujando suavemente con la palma
-            const pushFactor = Math.max(0, 1 - distToJelly / 220);
-            currentSquish = pushFactor * 0.4;
-            jellyState.targetScaleX = 1 - pushFactor * 0.15;
-            jellyState.targetScaleY = 1 + pushFactor * 0.18;
-            jellyState.rotation = (visualHandX - jellyState.x) * 0.002;
-
-            if (pushFactor > 0.35) playSquishSound(0.25);
-
-            jellyEmoji.textContent = '🥰';
-            jellyStateTitle.textContent = 'Acariciando Jellybaby';
-            jellyStateDesc.textContent = 'Junta pulgar e índice para aplastarlo';
-          }
-        }
-
-        // Dibujar puntos sutiles de la mano en el overlay espejo
-        canvasCtx.save();
-        canvasCtx.strokeStyle = 'rgba(16, 185, 129, 0.55)';
-        canvasCtx.lineWidth = 2.5;
-        const fingerConnections = [
-          [0, 1], [1, 2], [2, 3], [3, 4],
-          [0, 5], [5, 6], [6, 7], [7, 8],
-          [5, 9], [9, 10], [10, 11], [11, 12],
-          [9, 13], [13, 14], [14, 15], [15, 16],
-          [13, 17], [17, 18], [18, 19], [19, 20], [0, 17]
-        ];
-        fingerConnections.forEach(([a, b]) => {
-          canvasCtx.beginPath();
-          canvasCtx.moveTo(hand[a].x * w, hand[a].y * h);
-          canvasCtx.lineTo(hand[b].x * w, hand[b].y * h);
-          canvasCtx.stroke();
-        });
-
-        // Resaltar pulgar e índice
-        [thumbTip, indexTip].forEach(pt => {
-          canvasCtx.fillStyle = '#10b981';
-          canvasCtx.beginPath();
-          canvasCtx.arc(pt.x * w, pt.y * h, 6, 0, Math.PI * 2);
-          canvasCtx.fill();
-        });
-        canvasCtx.restore();
-      }
-
-      if (!isInteracting) {
-        if (wasPinching) {
-          playBoingSound();
-          wasPinching = false;
-        }
-        jellyState.targetX = w * 0.5;
-        jellyState.targetY = h * 0.52;
-        jellyState.targetScaleX = 1;
-        jellyState.targetScaleY = 1;
-        jellyState.rotation *= 0.85;
-        currentSquish = 0;
-
-        jellyEmoji.textContent = '🧸';
-        jellyStateTitle.textContent = 'Listo para apretar';
-        jellyStateDesc.textContent = 'Acerca tu mano o junta pulgar e índice';
-      }
-
-      jellyState.squishAmount = currentSquish;
-      const pct = Math.round(currentSquish * 100);
-      squishPercent.textContent = `${pct}%`;
-      squishBar.style.width = `${pct}%`;
-
-      updateAndDrawJellybaby();
-    }
-
-    // ==========================================
-    // CARA (ÁNGEL / DEMONIO) Y CUERPO (POSE)
-    // ==========================================
     const LEFT_EYE = { top: 159, bottom: 145, c1: 33, c2: 133 };
     const RIGHT_EYE = { top: 386, bottom: 374, c1: 362, c2: 263 };
 
@@ -880,7 +320,7 @@
       constructor(x, y, kind, color = null) {
         this.x = x;
         this.y = y;
-        this.kind = kind;
+        this.kind = kind; // 'angel', 'devil', 'star', 'heart'
         this.color = color;
         const angle = Math.random() * Math.PI * 2;
         const speed = 1 + Math.random() * 5;
@@ -952,7 +392,6 @@
     }
 
     function setFaceMode(newMode) {
-      if (activeTracker !== 'CARA') return;
       if (currentMode === newMode) return;
       currentMode = newMode;
 
@@ -1225,17 +664,6 @@
     }
 
     function initMediaPipe() {
-      hands = new Hands({
-        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
-      });
-      hands.setOptions({
-        maxNumHands: 2,
-        modelComplexity: 1,
-        minDetectionConfidence: 0.6,
-        minTrackingConfidence: 0.6
-      });
-      hands.onResults(onHandsResults);
-
       faceMesh = new FaceMesh({
         locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
       });
@@ -1258,21 +686,18 @@
       });
       pose.onResults(onPoseResults);
 
-      statusBadge.className = 'px-4 py-2 rounded-full text-xs font-medium bg-emerald-500/15 text-emerald-700 border border-emerald-500/30 flex items-center gap-2';
-      statusBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Modelos Listos';
+      statusBadge.className = 'px-4 py-2 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-2';
+      statusBadge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-400"></span> Modelos Listos';
       toggleBtn.disabled = false;
     }
 
     toggleBtn.addEventListener('click', async () => {
       if (!isRunning) {
         try {
-          initAudio();
           mpCamera = new Camera(videoElement, {
             onFrame: async () => {
               if (!isRunning) return;
-              if (activeTracker === 'MANOS' && hands) {
-                await hands.send({ image: videoElement });
-              } else if (activeTracker === 'CARA' && faceMesh) {
+              if (activeTracker === 'CARA' && faceMesh) {
                 await faceMesh.send({ image: videoElement });
               } else if (activeTracker === 'CUERPO' && pose) {
                 await pose.send({ image: videoElement });
@@ -1294,9 +719,8 @@
         if (mpCamera) await mpCamera.stop();
         videoPlaceholder.classList.remove('hidden');
         canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
-        jellyCtx.clearRect(0, 0, jellyCanvas.width, jellyCanvas.height);
         toggleBtn.textContent = 'Iniciar Cámara';
-        if (activeTracker === 'CARA') setFaceMode('NEUTRAL');
+        setFaceMode('NEUTRAL');
       }
     });
 
