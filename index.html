@@ -792,9 +792,9 @@
       <p class="modal-subtitle">Descarga primero el marcador para apuntar con tu cámara y luego abre el proyecto:</p>
       <div class="modal-options">
         <div class="marker-preview-box">
-          <img id="raMarkerPreview" alt="Marcador de Realidad Aumentada" class="marker-preview-img" />
+        <img src="marcador.png" alt="Marcador de Realidad Aumentada" class="marker-preview-img" />
         </div>
-        <a id="downloadMarkerBtn" download="marcador.png" class="btn btn-secondary modal-btn">⬇ Descargar marcador.png</a>
+        <a href="marcador.png" download="marcador.png" class="btn btn-secondary modal-btn">⬇ Descargar marcador.png</a>
         <a href="https://zainaahui.github.io/ratita-realidad-aumentada-con-marcador/" target="_blank" rel="noopener noreferrer" class="btn modal-btn">Ir al Proyecto RA ↗</a>
       </div>
     </div>
@@ -837,125 +837,7 @@
       }
     });
 
-    // --- GENERAR MARCADOR DESCARGABLE (marcador.png) ---
-    (function buildMarkerDownload() {
-      const c = document.createElement('canvas');
-      c.width = 700;
-      c.height = 700;
-      const ctx = c.getContext('2d');
-
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, 700, 700);
-
-      ctx.fillStyle = '#050505';
-      ctx.fillRect(70, 70, 560, 560);
-
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(210, 210, 280, 280);
-
-      ctx.fillStyle = '#55c5d8';
-      ctx.strokeStyle = '#111111';
-      ctx.lineWidth = 4;
-      ctx.beginPath();
-      ctx.moveTo(270, 280);
-      ctx.quadraticCurveTo(350, 200, 430, 280);
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.fillStyle = '#f8d828';
-      ctx.beginPath();
-      ctx.ellipse(350, 224, 22, 11, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.fillStyle = '#f8d828';
-      ctx.beginPath();
-      ctx.moveTo(270, 280);
-      ctx.quadraticCurveTo(350, 304, 430, 280);
-      ctx.lineTo(430, 290);
-      ctx.quadraticCurveTo(350, 314, 270, 290);
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.fillStyle = '#f4cfa6';
-      ctx.beginPath();
-      ctx.ellipse(355, 312, 74, 46, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.fillStyle = '#ffffff';
-      ctx.beginPath();
-      ctx.ellipse(416, 304, 20, 26, -0.15, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.fillStyle = '#111111';
-      ctx.beginPath();
-      ctx.arc(423, 306, 4.5, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.beginPath();
-      ctx.moveTo(400, 282);
-      ctx.lineTo(426, 270);
-      ctx.stroke();
-
-      ctx.fillStyle = '#d91c34';
-      ctx.beginPath();
-      ctx.moveTo(275, 312);
-      ctx.quadraticCurveTo(350, 300, 425, 312);
-      ctx.lineTo(466, 386);
-      ctx.quadraticCurveTo(350, 366, 234, 386);
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.fillStyle = '#f8d828';
-      ctx.beginPath();
-      ctx.ellipse(234, 392, 18, 15, -0.4, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.ellipse(466, 392, 18, 15, 0.4, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.fillStyle = '#f4cfa6';
-      ctx.beginPath();
-      ctx.moveTo(246, 380);
-      ctx.quadraticCurveTo(350, 362, 454, 380);
-      ctx.lineTo(454, 434);
-      ctx.lineTo(246, 434);
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.moveTo(350, 398);
-      ctx.lineTo(350, 412);
-      ctx.lineTo(344, 422);
-      ctx.moveTo(350, 412);
-      ctx.lineTo(356, 422);
-      ctx.stroke();
-
-      ctx.fillStyle = '#6c3824';
-      ctx.beginPath();
-      ctx.moveTo(246, 426);
-      ctx.quadraticCurveTo(350, 436, 454, 426);
-      ctx.lineTo(454, 456);
-      ctx.lineTo(246, 456);
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-
-      const dataUrl = c.toDataURL('image/png');
-      const imgEl = document.getElementById('raMarkerPreview');
-      const dlEl = document.getElementById('downloadMarkerBtn');
-      if (imgEl) imgEl.src = dataUrl;
-      if (dlEl) dlEl.href = dataUrl;
-    })();
+ 
 
     // --- EFECTO DE BRILLITOS INTERACTIVOS (SPARKLES) ---
     const pastelSparkleColors = ['#fca5ba', '#ffd29d', '#ffccd5', '#b7e4c7', '#ffffff'];
